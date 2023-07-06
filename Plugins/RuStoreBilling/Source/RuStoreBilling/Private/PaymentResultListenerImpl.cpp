@@ -1,12 +1,16 @@
-#include "PaymentResultListenerImpl.h"
-#include "EUPaymentFinishCode.h"
-#include "FUInvoiceResult.h"
-#include "FUInvalidInvoice.h"
-#include "FUPurchaseResult.h"
-#include "FUInvalidPurchase.h"
-#include "FUInvalidPaymentState.h"
+// Copyright Epic Games, Inc. All Rights Reserved.
 
-FUPaymentResult* PaymentResultListenerImpl::ConvertResponse(AndroidJavaObject* responseObject)
+#include "PaymentResultListenerImpl.h"
+#include "EURuStorePaymentFinishCode.h"
+#include "FURuStoreInvoiceResult.h"
+#include "FURuStoreInvalidInvoice.h"
+#include "FURuStorePurchaseResult.h"
+#include "FURuStoreInvalidPurchase.h"
+#include "FURuStoreInvalidPaymentState.h"
+
+using namespace RuStoreSDK;
+
+FURuStorePaymentResult* PaymentResultListenerImpl::ConvertResponse(AndroidJavaObject* responseObject)
 {
     FString resultType = "";
 
@@ -17,48 +21,42 @@ FUPaymentResult* PaymentResultListenerImpl::ConvertResponse(AndroidJavaObject* r
     str.ParseIntoArray(_className, TEXT("$"), true);
     if (_className.Num() > 0) resultType = _className.Last();
 
-    FString tag = "rustore";
-    FString msg = str;
-#if PLATFORM_ANDROID
-    __android_log_write(ANDROID_LOG_INFO, TCHAR_TO_UTF8(*tag), TCHAR_TO_UTF8(*msg));
-#endif
-
     delete javaClass;
 
     if (resultType == "InvoiceResult")
     {
-        auto result = new FUInvoiceResult();
+        auto result = new FURuStoreInvoiceResult();
         result->invoiceId = responseObject->GetFString("invoiceId");
 
-        auto jpaymentFinishCode = responseObject->GetAJObject("finishCode", "Lru/rustore/sdk/billingclient/model/purchase/PaymentFinishCode;");
-        if (jpaymentFinishCode != nullptr)
+        auto jPaymentFinishCode = responseObject->GetAJObject("finishCode", "Lru/rustore/sdk/billingclient/model/purchase/PaymentFinishCode;");
+        if (jPaymentFinishCode != nullptr)
         {
-            int ordinal = jpaymentFinishCode->CallInt("ordinal");
-            result->finishCode = static_cast<EUPaymentFinishCode>(ordinal);
+            int ordinal = jPaymentFinishCode->CallInt("ordinal");
+            result->finishCode = static_cast<EURuStorePaymentFinishCode>(ordinal);
 
-            delete jpaymentFinishCode;
+            delete jPaymentFinishCode;
         }
 
         return result;
     }
     else if (resultType == "InvalidInvoice")
     {
-        auto result = new FUInvalidInvoice();
+        auto result = new FURuStoreInvalidInvoice();
         result->invoiceId = responseObject->GetFString("invoiceId");
 
         return result;
     }
     else if (resultType == "PurchaseResult")
     {
-        auto result = new FUPurchaseResult();
+        auto result = new FURuStorePurchaseResult();
 
-        auto jpaymentFinishCode = responseObject->GetAJObject("finishCode", "Lru/rustore/sdk/billingclient/model/purchase/PaymentFinishCode;");
-        if (jpaymentFinishCode != nullptr)
+        auto jPaymentFinishCode = responseObject->GetAJObject("finishCode", "Lru/rustore/sdk/billingclient/model/purchase/PaymentFinishCode;");
+        if (jPaymentFinishCode != nullptr)
         {
-            int ordinal = jpaymentFinishCode->CallInt("ordinal");
-            result->finishCode = static_cast<EUPaymentFinishCode>(ordinal);
+            int ordinal = jPaymentFinishCode->CallInt("ordinal");
+            result->finishCode = static_cast<EURuStorePaymentFinishCode>(ordinal);
 
-            delete jpaymentFinishCode;
+            delete jPaymentFinishCode;
         }
 
         result->orderId = responseObject->GetFString("orderId");
@@ -70,31 +68,31 @@ FUPaymentResult* PaymentResultListenerImpl::ConvertResponse(AndroidJavaObject* r
     }
     else if (resultType == "InvalidPurchase")
     {
-        auto result = new FUInvalidPurchase();
+        auto result = new FURuStoreInvalidPurchase();
         result->purchaseId = responseObject->GetFString("purchaseId");
         result->invoiceId = responseObject->GetFString("invoiceId");
         result->orderId = responseObject->GetFString("orderId");
 
-        auto jquantity = responseObject->GetAJObject("quantity", "Ljava/lang/Integer;");
-        if (jquantity != nullptr)
+        auto jQuantity = responseObject->GetAJObject("quantity", "Ljava/lang/Integer;");
+        if (jQuantity != nullptr)
         {
-            result->quantity = jquantity->CallInt("intValue");
-            delete jquantity;
+            result->quantity = jQuantity->CallInt("intValue");
+            delete jQuantity;
         }
 
         result->productId = responseObject->GetFString("productId");
 
-        auto jerrorCode = responseObject->GetAJObject("errorCode", "Ljava/lang/Integer;");
-        if (jerrorCode != nullptr)
+        auto jErrorCode = responseObject->GetAJObject("errorCode", "Ljava/lang/Integer;");
+        if (jErrorCode != nullptr)
         {
-            result->errorCode = jerrorCode->CallInt("intValue");
-            delete jerrorCode;
+            result->errorCode = jErrorCode->CallInt("intValue");
+            delete jErrorCode;
         }
 
         return result;
     }
 
-    return new FUInvalidPaymentState();
+    return new FURuStoreInvalidPaymentState();
 }
 
 #if PLATFORM_ANDROID
@@ -102,17 +100,19 @@ extern "C"
 {
     JNIEXPORT void JNICALL Java_com_Plugins_RuStoreBilling_PaymentResultListenerWrapper_NativeOnFailure(JNIEnv*, jobject, jlong pointer, jthrowable throwable)
     {
-        auto castobj = reinterpret_cast<PaymentResultListenerImpl*>(pointer);
         auto obj = new AndroidJavaObject(throwable);
         obj->UpdateToGlobalRef();
+
+        auto castobj = reinterpret_cast<PaymentResultListenerImpl*>(pointer);
         castobj->OnFailure(obj);
     }
 
     JNIEXPORT void JNICALL Java_com_Plugins_RuStoreBilling_PaymentResultListenerWrapper_NativeOnSuccess(JNIEnv*, jobject, jlong pointer, jobject result)
     {
-        auto castobj = reinterpret_cast<PaymentResultListenerImpl*>(pointer);
         auto obj = new AndroidJavaObject(result);
         obj->UpdateToGlobalRef();
+
+        auto castobj = reinterpret_cast<PaymentResultListenerImpl*>(pointer);
         castobj->OnSuccess(obj);
     }
 }

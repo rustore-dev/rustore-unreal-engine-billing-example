@@ -1,14 +1,15 @@
+// Copyright Epic Games, Inc. All Rights Reserved.
+
 #pragma once
 
 #include "CoreMinimal.h"
 #include "UObject/Object.h"
-#include "UObject/Interface.h"
-#include "UObject/ScriptMacros.h"
-#include <functional>
 
 #include "UnrealPlayerImpl.h"
 #include "FURuStoreError.h"
 #include "URuStoreCore.generated.h"
+
+using namespace RuStoreSDK;
 
 UCLASS(Blueprintable)
 class RUSTORECORE_API URuStoreCore : public UObject
@@ -17,27 +18,26 @@ class RUSTORECORE_API URuStoreCore : public UObject
 
 private:
 	static URuStoreCore* _instance;
-	static bool _isInstanceInitialized;
+	static bool _bIsInstanceInitialized;
 
+	bool bIsInitialized = false;
 	AndroidJavaObject* _clientWrapper = nullptr;
 	UnrealPlayerImpl* unrealPlayer = nullptr;
 
-	bool isInitialized = false;
-
 public:
+	static const FString PluginVersion;
+
 	UFUNCTION(BlueprintCallable, Category = "RuStore Core")
-	bool getIsInitialized();
+	bool getbIsInitialized();
 
 	UFUNCTION(BlueprintCallable, Category = "RuStore Core")
 	static URuStoreCore* Instance();
 
+	UFUNCTION(BlueprintCallable, Category = "RuStore Core")
 	static bool IsPlatformSupported();
-	static bool IsPlatformSupported(TFunction<void(long requestId, FURuStoreError*)> onFailure);
+	static bool IsPlatformSupported(TFunction<void(long requestId, TSharedPtr<FURuStoreError, ESPMode::ThreadSafe>)> onFailure);
 
-	URuStoreCore();
-	~URuStoreCore();
-
-	void BeginDestroy();
+	void ConditionalBeginDestroy();
 
 	UFUNCTION(BlueprintCallable, Category = "RuStore Core")
 	bool Init();
@@ -49,7 +49,19 @@ public:
 	static void ShowToast(FString message);
 
 	UFUNCTION(BlueprintCallable, Category = "RuStore Core")
+	static void LogVerbose(FString tag, FString message);
+
+	UFUNCTION(BlueprintCallable, Category = "RuStore Core")
+	static void LogDebug(FString tag, FString message);
+
+	UFUNCTION(BlueprintCallable, Category = "RuStore Core")
 	static void LogInfo(FString tag, FString message);
+
+	UFUNCTION(BlueprintCallable, Category = "RuStore Core")
+	static void LogWarn(FString tag, FString message);
+
+	UFUNCTION(BlueprintCallable, Category = "RuStore Core")
+	static void LogError(FString tag, FString message);
 
 	UFUNCTION(BlueprintCallable, Category = "RuStore Core")
 	static bool CompareId(int64 A, int64 B);

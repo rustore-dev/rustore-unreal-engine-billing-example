@@ -9,6 +9,37 @@
     <copyDir src="$S(PluginDir)/ThirdParty/Android" dst="$S(BuildDir)/libs" />
   </resourceCopies>
 
+  <androidManifestUpdates>
+    <loopElements tag="activity">
+      <!-- Find UE GameActivity -->
+      <log text="Find activity" />
+      <setStringFromAttribute result="activityName" tag="$" name="android:name" />
+      <setBoolIsEqual result="bUE4GameActivity" arg1="$S(activityName)" arg2="com.epicgames.ue4.GameActivity" />
+	    <!-- Add android:exported attribute for UE4 GameActivity -->
+	    <if condition="bUE4GameActivity">
+		    <true>
+			    <addAttribute tag="$" name="android:exported" value="true"/>
+		    </true>
+	    </if>
+      <setBoolIsEqual result="bUE5GameActivity" arg1="$S(activityName)" arg2="com.epicgames.unreal.GameActivity" />
+      <setBoolOr result="bGameActivity" arg1="$B(bUE4GameActivity)" arg2="$B(bUE5GameActivity)" />
+      <if condition="bGameActivity">
+        <true>
+          <!-- Add intent-filter to GameActivity -->
+          <addElements tag="$">
+            <intent-filter>
+              <action android:name="android.intent.action.VIEW" />
+              <category android:name="android.intent.category.DEFAULT" />
+              <category android:name="android.intent.category.BROWSABLE" />
+              <!-- Set your appscheme -->
+              <data android:scheme="yourappscheme" />
+            </intent-filter>
+          </addElements>
+        </true>
+      </if>
+    </loopElements>
+  </androidManifestUpdates>
+
   <buildGradleAdditions>
     <insert>
       ext.billing_type = ''
@@ -20,7 +51,7 @@
       dependencies {
         // RuStore Billing
         implementation ("ru.rustore.sdk:billingclient:1.1.1$billing_type")
-        implementation files("src/main/libs/RuStoreUnityBillingClient${billing_type}.aar")
+        implementation fileTree(include: ["RuStoreUnityBillingClient${billing_type}.aar"], dir: 'src/main/libs')
       }
     </insert>
   </buildGradleAdditions>
@@ -42,5 +73,7 @@
         RuStoreUnityBillingClient.onNewIntent(newIntent);
     </insert>
   </gameActivityOnNewIntentAdditions>
+  
+  
   
 </root>

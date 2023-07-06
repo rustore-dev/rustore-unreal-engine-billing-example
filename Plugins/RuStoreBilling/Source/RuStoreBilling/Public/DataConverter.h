@@ -1,21 +1,26 @@
+// Copyright Epic Games, Inc. All Rights Reserved.
+
 #pragma once
 
 #include "CoreMinimal.h"
 #include "Misc/DateTime.h"
-#include "FUProduct.h"
-#include "FUPurchase.h"
-#include "FURequestMeta.h"
-#include "FUResponseWithCode.h"
+#include "FURuStoreProduct.h"
+#include "FURuStorePurchase.h"
+#include "FURuStoreRequestMeta.h"
+#include "FURuStoreResponseWithCode.h"
 #include "AndroidJavaClass.h"
 
-class DataConverter
+namespace RuStoreSDK
 {
-public:
-    static FURequestMeta* ConvertRequestMeta(AndroidJavaObject* obj);
-    static FUProduct* ConvertProduct(AndroidJavaObject* obj);
-    static FUDigitalShopGeneralError* ConvertFUDigitalShopGeneralError(AndroidJavaObject* obj);
-    static FUProductSubscription* ConvertFUProductSubscription(AndroidJavaObject* obj);
-    static FUSubscriptionPeriod* ConvertFUSubscriptionPeriod(AndroidJavaObject* obj);
-    static FUPurchase* ConvertPurchase(AndroidJavaObject* obj);
-    static void InitResponseWithCode(AndroidJavaObject* obj, FUResponseWithCode* response);
-};
+    class DataConverter
+    {
+    public:
+        static FURuStoreRequestMeta* ConvertRequestMeta(AndroidJavaObject* obj);
+        static FURuStoreProduct* ConvertProduct(AndroidJavaObject* obj);
+        static FURuStoreDigitalShopGeneralError* ConvertFURuStoreDigitalShopGeneralError(AndroidJavaObject* obj);
+        static FURuStoreProductSubscription* ConvertFURuStoreProductSubscription(AndroidJavaObject* obj);
+        static FURuStoreSubscriptionPeriod* ConvertFURuStoreSubscriptionPeriod(AndroidJavaObject* obj);
+        static FURuStorePurchase* ConvertPurchase(AndroidJavaObject* obj);
+        static void InitResponseWithCode(AndroidJavaObject* obj, FURuStoreResponseWithCode* response);
+    };
+}
