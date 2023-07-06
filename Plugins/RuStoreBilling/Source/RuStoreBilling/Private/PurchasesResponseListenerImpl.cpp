@@ -1,8 +1,12 @@
+// Copyright Epic Games, Inc. All Rights Reserved.
+
 #include "PurchasesResponseListenerImpl.h"
 
-FUPurchasesResponse* PurchasesResponseListenerImpl::ConvertResponse(AndroidJavaObject* responseObject)
+using namespace RuStoreSDK;
+
+FURuStorePurchasesResponse* PurchasesResponseListenerImpl::ConvertResponse(AndroidJavaObject* responseObject)
 {
-    auto response = new FUPurchasesResponse();
+    auto response = new FURuStorePurchasesResponse();
 
     DataConverter::InitResponseWithCode(responseObject, response);
 
@@ -12,13 +16,13 @@ FUPurchasesResponse* PurchasesResponseListenerImpl::ConvertResponse(AndroidJavaO
         auto size = purchases->CallInt("size");
         for (int i = 0; i < size; i++)
         {
-            auto p = purchases->CallAJObject("get", i);
-            if (p != nullptr)
+            auto purchase = purchases->CallAJObject("get", i);
+            if (purchase != nullptr)
             {
-                auto item = DataConverter::ConvertPurchase(p);
+                auto item = DataConverter::ConvertPurchase(purchase);
                 response->purchases.Add(*item);
 
-                delete p;
+                delete purchase;
             }
         }
 
@@ -33,17 +37,19 @@ extern "C"
 {
     JNIEXPORT void JNICALL Java_com_Plugins_RuStoreBilling_PurchasesResponseListenerWrapper_NativeOnFailure(JNIEnv*, jobject, jlong pointer, jthrowable throwable)
     {
-        auto castobj = reinterpret_cast<ResponseListener<FUPurchasesResponse>*>(pointer);
         auto obj = new AndroidJavaObject(throwable);
         obj->UpdateToGlobalRef();
+
+        auto castobj = reinterpret_cast<PurchasesResponseListenerImpl*>(pointer);
         castobj->OnFailure(obj);
     }
 
     JNIEXPORT void JNICALL Java_com_Plugins_RuStoreBilling_PurchasesResponseListenerWrapper_NativeOnSuccess(JNIEnv*, jobject, jlong pointer, jobject result)
     {
-        auto castobj = reinterpret_cast<ResponseListener<FUPurchasesResponse>*>(pointer);
         auto obj = new AndroidJavaObject(result);
         obj->UpdateToGlobalRef();
+
+        auto castobj = reinterpret_cast<PurchasesResponseListenerImpl*>(pointer);
         castobj->OnSuccess(obj);
     }
 }

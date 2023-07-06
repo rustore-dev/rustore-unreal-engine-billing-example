@@ -1,20 +1,25 @@
+// Copyright Epic Games, Inc. All Rights Reserved.
+
 #pragma once
 
 #include "ResponseListener.h"
-#include "FUPurchaseInfoResponse.h"
+#include "FURuStorePurchaseInfoResponse.h"
 #include "DataConverter.h"
 
-class PurchaseInfoResponseListenerImpl : public ResponseListener<FUPurchaseInfoResponse>
+namespace RuStoreSDK
 {
-public:
-    PurchaseInfoResponseListenerImpl(
-        TFunction<void(long, FURuStoreError*)> onFailure,
-        TFunction<void(long, FUPurchaseInfoResponse*)> onSuccess,
-        TFunction<void(RuStoreListener*)> onFinish
-    ) : ResponseListener<FUPurchaseInfoResponse>("com/Plugins/RuStoreBilling/PurchaseInfoResponseListenerWrapper", "ru/rustore/unitysdk/billingclient/callbacks/PurchaseInfoResponseListener", onFailure, onSuccess, onFinish)
+    class RUSTOREBILLING_API PurchaseInfoResponseListenerImpl : public ResponseListener<FURuStorePurchaseInfoResponse>
     {
-    }
+    public:
+        PurchaseInfoResponseListenerImpl(
+            TFunction<void(long, TSharedPtr<FURuStorePurchaseInfoResponse, ESPMode::ThreadSafe>)> onSuccess,
+            TFunction<void(long, TSharedPtr<FURuStoreError, ESPMode::ThreadSafe>)> onFailure,
+            TFunction<void(RuStoreListener*)> onFinish
+        ) : ResponseListener<FURuStorePurchaseInfoResponse>("com/Plugins/RuStoreBilling/PurchaseInfoResponseListenerWrapper", "ru/rustore/unitysdk/billingclient/callbacks/PurchaseInfoResponseListener", onSuccess, onFailure, onFinish)
+        {
+        }
 
-protected:
-    FUPurchaseInfoResponse* ConvertResponse(AndroidJavaObject* responseObject) override;
-};
+    protected:
+        FURuStorePurchaseInfoResponse* ConvertResponse(AndroidJavaObject* responseObject) override;
+    };
+}

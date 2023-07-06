@@ -1,12 +1,12 @@
+// Copyright Epic Games, Inc. All Rights Reserved.
+
 package com.Plugins.RuStoreBilling;
 
-import com.Plugins.RuStoreCore.IResponseListenerWrapper;
+import com.Plugins.RuStoreCore.IRuStoreListener;
 import ru.rustore.unitysdk.billingclient.callbacks.PurchaseInfoResponseListener;
 import ru.rustore.sdk.billingclient.model.purchase.response.PurchaseInfoResponse;
 
-import android.util.Log;
-
-public class PurchaseInfoResponseListenerWrapper implements IResponseListenerWrapper, PurchaseInfoResponseListener
+public class PurchaseInfoResponseListenerWrapper implements IRuStoreListener, PurchaseInfoResponseListener
 {
     private Object mutex = new Object();
     private long cppPointer = 0;
@@ -22,7 +22,6 @@ public class PurchaseInfoResponseListenerWrapper implements IResponseListenerWra
     public void OnFailure(Throwable throwable) {
         synchronized (mutex) {
             if (cppPointer != 0) {
-                Log.e("rustore", "PurchaseInfoResponse: Error message");
                 NativeOnFailure(cppPointer, throwable);  
             }
 		}
@@ -32,7 +31,6 @@ public class PurchaseInfoResponseListenerWrapper implements IResponseListenerWra
     public void OnSuccess(PurchaseInfoResponse response) {
         synchronized (mutex) {
             if (cppPointer != 0) {
-                Log.e("rustore", "PurchaseInfoResponse: Succes message");
                 NativeOnSuccess(cppPointer, response);
             }
         }
@@ -40,7 +38,6 @@ public class PurchaseInfoResponseListenerWrapper implements IResponseListenerWra
 
     public void DisposeCppPointer() {
         synchronized (mutex) {
-            Log.e("rustore", "FeatureAvailabilityResult: Dispose pointer");
             cppPointer = 0;
         }
     }

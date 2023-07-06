@@ -1,22 +1,24 @@
-#pragma once
+// Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "DataConverter.h"
 
-FURequestMeta* DataConverter::ConvertRequestMeta(AndroidJavaObject* obj)
+using namespace RuStoreSDK;
+
+FURuStoreRequestMeta* DataConverter::ConvertRequestMeta(AndroidJavaObject* obj)
 {
     if (obj == nullptr) return nullptr;
 
-    auto requestMeta = new FURequestMeta();
+    auto requestMeta = new FURuStoreRequestMeta();
     requestMeta->traceId = obj->GetFString("traceId");
 
     return requestMeta;
 }
 
-FUProduct* DataConverter::ConvertProduct(AndroidJavaObject* obj)
+FURuStoreProduct* DataConverter::ConvertProduct(AndroidJavaObject* obj)
 {
     if (obj == nullptr) return nullptr;
 
-    auto product = new FUProduct();
+    auto product = new FURuStoreProduct();
 
     product->productId = obj->GetFString("productId");
 
@@ -24,7 +26,7 @@ FUProduct* DataConverter::ConvertProduct(AndroidJavaObject* obj)
     if (jproductType != nullptr)
     {
         int ordinal = jproductType->CallInt("ordinal");
-        product->productType = static_cast<EUProductType>(ordinal);
+        product->productType = static_cast<EURuStoreProductType>(ordinal);
 
         delete jproductType;
     }
@@ -33,7 +35,7 @@ FUProduct* DataConverter::ConvertProduct(AndroidJavaObject* obj)
     if (jproductStatus != nullptr)
     {
         int ordinal = jproductStatus->CallInt("ordinal");
-        product->productStatus = static_cast<EUProductStatus>(ordinal);
+        product->productStatus = static_cast<EURuStoreProductStatus>(ordinal);
 
         delete jproductStatus;
     }
@@ -72,7 +74,7 @@ FUProduct* DataConverter::ConvertProduct(AndroidJavaObject* obj)
     auto jsubscription = obj->GetAJObject("subscription", "Lru/rustore/sdk/billingclient/model/product/ProductSubscription;");
     if (jsubscription != nullptr)
     {
-        product->subscription = *ConvertFUProductSubscription(jsubscription);
+        product->subscription = *ConvertFURuStoreProductSubscription(jsubscription);
 
         delete jsubscription;
     }
@@ -80,11 +82,11 @@ FUProduct* DataConverter::ConvertProduct(AndroidJavaObject* obj)
     return product;
 }
 
-FUDigitalShopGeneralError* DataConverter::ConvertFUDigitalShopGeneralError(AndroidJavaObject* obj)
+FURuStoreDigitalShopGeneralError* DataConverter::ConvertFURuStoreDigitalShopGeneralError(AndroidJavaObject* obj)
 {
     if (obj == nullptr) return nullptr;
 
-    auto error = new FUDigitalShopGeneralError();
+    auto error = new FURuStoreDigitalShopGeneralError();
     error->name = obj->GetFString("name");
 
     auto codeObj = obj->GetAJObject("code");
@@ -99,30 +101,30 @@ FUDigitalShopGeneralError* DataConverter::ConvertFUDigitalShopGeneralError(Andro
     return error;
 }
 
-FUProductSubscription* DataConverter::ConvertFUProductSubscription(AndroidJavaObject* obj)
+FURuStoreProductSubscription* DataConverter::ConvertFURuStoreProductSubscription(AndroidJavaObject* obj)
 {
     if (obj == nullptr) return nullptr;
 
-    auto subscription = new FUProductSubscription();
+    auto subscription = new FURuStoreProductSubscription();
 
     auto jsubscriptionPeriod = obj->GetAJObject("subscriptionPeriod", "Lru/rustore/sdk/billingclient/model/product/SubscriptionPeriod;");
     if (jsubscriptionPeriod != nullptr)
     {
-        subscription->subscriptionPeriod = *ConvertFUSubscriptionPeriod(jsubscriptionPeriod);
+        subscription->subscriptionPeriod = *ConvertFURuStoreSubscriptionPeriod(jsubscriptionPeriod);
         delete jsubscriptionPeriod;
     }
 
     auto jfreeTrialPeriod = obj->GetAJObject("freeTrialPeriod", "Lru/rustore/sdk/billingclient/model/product/SubscriptionPeriod;");
     if (jfreeTrialPeriod != nullptr)
     {
-        subscription->freeTrialPeriod = *ConvertFUSubscriptionPeriod(jfreeTrialPeriod);
+        subscription->freeTrialPeriod = *ConvertFURuStoreSubscriptionPeriod(jfreeTrialPeriod);
         delete jfreeTrialPeriod;
     }
 
     auto jgracePeriod = obj->GetAJObject("gracePeriod", "Lru/rustore/sdk/billingclient/model/product/SubscriptionPeriod;");
     if (jgracePeriod != nullptr)
     {
-        subscription->gracePeriod = *ConvertFUSubscriptionPeriod(jgracePeriod);
+        subscription->gracePeriod = *ConvertFURuStoreSubscriptionPeriod(jgracePeriod);
         delete jgracePeriod;
     }
 
@@ -132,18 +134,18 @@ FUProductSubscription* DataConverter::ConvertFUProductSubscription(AndroidJavaOb
     auto jintroductoryPricePeriod = obj->GetAJObject("introductoryPricePeriod", "Lru/rustore/sdk/billingclient/model/product/SubscriptionPeriod;");
     if (jintroductoryPricePeriod != nullptr)
     {
-        subscription->introductoryPricePeriod = *ConvertFUSubscriptionPeriod(jintroductoryPricePeriod);
+        subscription->introductoryPricePeriod = *ConvertFURuStoreSubscriptionPeriod(jintroductoryPricePeriod);
         delete jintroductoryPricePeriod;
     }
 
     return subscription;
 }
 
-FUSubscriptionPeriod* DataConverter::ConvertFUSubscriptionPeriod(AndroidJavaObject* obj)
+FURuStoreSubscriptionPeriod* DataConverter::ConvertFURuStoreSubscriptionPeriod(AndroidJavaObject* obj)
 {
     if (obj == nullptr) return nullptr;
 
-    auto subscriptionPeriod = new FUSubscriptionPeriod();
+    auto subscriptionPeriod = new FURuStoreSubscriptionPeriod();
 
     subscriptionPeriod->years = obj->GetInt("years");
     subscriptionPeriod->months = obj->GetInt("months");
@@ -152,11 +154,11 @@ FUSubscriptionPeriod* DataConverter::ConvertFUSubscriptionPeriod(AndroidJavaObje
     return subscriptionPeriod;
 }
 
-FUPurchase* DataConverter::ConvertPurchase(AndroidJavaObject* obj)
+FURuStorePurchase* DataConverter::ConvertPurchase(AndroidJavaObject* obj)
 {
     if (obj == nullptr) return nullptr;
 
-    auto purchase = new FUPurchase();
+    auto purchase = new FURuStorePurchase();
     purchase->purchaseId = obj->GetFString("purchaseId");
     purchase->productId = obj->GetFString("productId");
     purchase->invoiceId = obj->GetFString("invoiceId");
@@ -209,7 +211,7 @@ FUPurchase* DataConverter::ConvertPurchase(AndroidJavaObject* obj)
     if (jpurchaseState != nullptr)
     {
         int ordinal = jpurchaseState->CallInt("ordinal");
-        purchase->purchaseState = static_cast<EUPurchaseState>(ordinal);
+        purchase->purchaseState = static_cast<EURuStorePurchaseState>(ordinal);
 
         delete jpurchaseState;
     }
@@ -220,7 +222,7 @@ FUPurchase* DataConverter::ConvertPurchase(AndroidJavaObject* obj)
     return purchase;
 }
 
-void DataConverter::InitResponseWithCode(AndroidJavaObject* obj, FUResponseWithCode* response)
+void DataConverter::InitResponseWithCode(AndroidJavaObject* obj, FURuStoreResponseWithCode* response)
 {
     response->code = obj->GetInt("code");
     response->errorMessage = obj->GetFString("errorMessage");
@@ -235,7 +237,7 @@ void DataConverter::InitResponseWithCode(AndroidJavaObject* obj, FUResponseWithC
             auto e = errors->CallAJObject("get", i);
             if (e != nullptr)
             {
-                auto item = ConvertFUDigitalShopGeneralError(e);
+                auto item = ConvertFURuStoreDigitalShopGeneralError(e);
                 response->errors.Add(*item);
             }
             delete e;

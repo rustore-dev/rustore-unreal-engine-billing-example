@@ -1,105 +1,48 @@
+// Copyright Epic Games, Inc. All Rights Reserved.
+
 #pragma once
 
 #include "CoreMinimal.h"
-#include "RuStoreListener.h"
-#include "AndroidJavaClass.h"
-#include "AndroidJavaObject.h"
-#include "FURuStoreError.h"
-#include "CallbackHandler.h"
-#include <memory>
+#include "ErrorListener.h"
 
-using namespace std;
-
-template<typename T>
-class ResponseListener : public RuStoreListener
+namespace RuStoreSDK
 {
-private:
-    TFunction<void(long requestId, FURuStoreError*)> _onFailure;
-    TFunction<void(long requestId, T*)> _onSuccess;
-    TFunction<void(RuStoreListener*)> _onFinish;
-    
-    FString className = "";
-    FString interfaceName = "";
-
-protected:
-    AndroidJavaObject* javaWrapper = nullptr;
-
-    ResponseListener(FString className, FString interfaceName, TFunction<void(long requestId, FURuStoreError*)> onFailure, TFunction<void(long requestId, T*)> onSuccess, TFunction<void(RuStoreListener*)> onFinish)
+    template<typename T>
+    class ResponseListener : public ErrorListener
     {
-        _onFailure = onFailure;
-        _onSuccess = onSuccess;
-        _onFinish = onFinish;
+    private:
+        TFunction<void(long requestId, TSharedPtr<T, ESPMode::ThreadSafe>)> _onSuccess;
 
-        this->className = className;
-        this->interfaceName = interfaceName;
-
-        long cppPointer = 0;
-#if PLATFORM_ANDROID
-        cppPointer = (long)this;
-#endif
-        javaWrapper = new AndroidJavaObject(className, cppPointer, false);
-        javaWrapper->SetInterfaceName(interfaceName);
-    }
-
-public:
-    AndroidJavaObject* GetJWrapper()
-    {
-        return javaWrapper;
-    }
-
-    virtual T* ConvertResponse(AndroidJavaObject* responseObject) = 0;
-    virtual FURuStoreError* ConvertError(AndroidJavaObject* errorObject)
-    {
-        FURuStoreError* error = new FURuStoreError();
-
-        error->name = errorObject->CallJavaClassFString("getSimpleName");
-        error->description = errorObject->CallFString("getMessage");
-
-        return error;
-    }
-    
-    virtual ~ResponseListener()
-    {
-        FString tag = "rustore_debug";
-        FString msg = "~ResponseListener";
-#if PLATFORM_ANDROID
-        __android_log_write(ANDROID_LOG_INFO, TCHAR_TO_UTF8(*tag), TCHAR_TO_UTF8(*msg));
-#endif
-
-        if (javaWrapper != nullptr)
+    protected:
+        ResponseListener(
+            FString className,
+            FString interfaceName,
+            TFunction<void(long requestId, TSharedPtr<T, ESPMode::ThreadSafe>)> onSuccess,
+            TFunction<void(long requestId, TSharedPtr<FURuStoreError, ESPMode::ThreadSafe>)> onFailure,
+            TFunction<void(RuStoreListener*)> onFinish
+        ) : ErrorListener(className, interfaceName, onFailure, onFinish)
         {
-            javaWrapper->CallVoid("DisposeCppPointer");
-            delete javaWrapper;
+            _onSuccess = onSuccess;
         }
-    }
 
-    void OnFailure(AndroidJavaObject* errorObject)
-    {
-        auto error = TSharedPtr<FURuStoreError>(ConvertError(errorObject));
-        delete errorObject;
+        virtual ~ResponseListener() { }
 
-        auto listener = GetWeakPtr();
-        CallbackHandler::AddCallback([this, listener, error]() {
-            if (!listener.expired())
-            {
-                this->_onFailure(this->GetId(), error.Get());
-                this->_onFinish(this);
-            }
-        });
-    }
+        virtual T* ConvertResponse(AndroidJavaObject* responseObject) = 0;
 
-    void OnSuccess(AndroidJavaObject* responseObject)
-    {
-        auto response = TSharedPtr<T>(ConvertResponse(responseObject));
-        delete responseObject;
+    public:
+        void OnSuccess(AndroidJavaObject* responseObject)
+        {
+            auto response = TSharedPtr<T, ESPMode::ThreadSafe>(ConvertResponse(responseObject));
+            delete responseObject;
 
-        auto listener = GetWeakPtr();
-        CallbackHandler::AddCallback([this, listener, response]() {
-            if (!listener.expired())
-            {
-                this->_onSuccess(this->GetId(), response.Get());
-                this->_onFinish(this);
-            }
-        });
-    }
-};
+            auto listener = GetWeakPtr();
+            CallbackHandler::AddCallback([this, listener, response]() {
+                if (listener.IsValid())
+                {
+                    this->_onSuccess(this->GetId(), response);
+                    this->_onFinish(this);
+                }
+            });
+        }
+    };
+}

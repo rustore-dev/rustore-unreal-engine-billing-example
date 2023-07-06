@@ -1,27 +1,35 @@
+// Copyright Epic Games, Inc. All Rights Reserved.
+
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AndroidJavaClass.h"
-#include "AndroidJavaObject.h"
-#include "FURuStoreError.h"
 #include "CallbackHandler.h"
+#include "ErrorConverter.h"
+#include "RuStoreListener.h"
 
-class RUSTORECORE_API ErrorListener
+namespace RuStoreSDK
 {
-private:
-    long cppPointer;
-#if PLATFORM_ANDROID
-    jobject wrapperJavaObject;
-#endif
+    class RUSTORECORE_API ErrorListener : public RuStoreListener
+    {
+    protected:
+        TFunction<void(long, TSharedPtr<FURuStoreError, ESPMode::ThreadSafe>)> _onFailure;
+        TFunction<void(RuStoreListener*)> _onFinish;
 
-    TFunction<void(FURuStoreError*)> _onFailure;
+        ErrorListener(
+            FString className,
+            FString interfaceName,
+            TFunction<void(long, TSharedPtr<FURuStoreError, ESPMode::ThreadSafe>)> onFailure,
+            TFunction<void(RuStoreListener*)> onFinish
+        ) : RuStoreListener(className, interfaceName)
+        {
+            _onFailure = onFailure;
+            _onFinish = onFinish;
+        }
+        virtual ~ErrorListener();
 
-protected:
-    ErrorListener(FString className, TFunction<void(FURuStoreError*)> onFailure);
+        virtual FURuStoreError* ConvertError(AndroidJavaObject* errorObject);
 
-    AndroidJavaObject* GetJListener(FString className);
-    virtual FURuStoreError* ConvertError(AndroidJavaObject* errorObject);
-
-public:
-    void OnFailure(AndroidJavaObject* errorObject);
-};
+    public:
+        void OnFailure(AndroidJavaObject* errorObject);
+    };
+}

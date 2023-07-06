@@ -1,5 +1,7 @@
+// Copyright Epic Games, Inc. All Rights Reserved.
+
 /***
-Add this settings to Edit > Project Settings > Android > Advanced APK Packaging > Extra Settings for <activity section> (\n to separate lines)
+Add this settings to Edit > Project Settings > Android > Advanced APK Packaging > Extra Settings for <activity> section (\n to separate lines)
 
 <intent-filter>\n
     <action android:name="android.intent.action.VIEW" />\n
@@ -13,49 +15,43 @@ Add this settings to Edit > Project Settings > Android > Advanced APK Packaging 
 
 #include "CoreMinimal.h"
 #include "UObject/Object.h"
-#include "UObject/Interface.h"
-#include "UObject/ScriptMacros.h"
-#include "GenericPlatform/GenericPlatformMisc.h"
-#include <functional>
-#include <map>
-#include <memory>
 
 #include "AndroidJavaObject.h"
-#include "FUConfirmPurchaseResponse.h"
-#include "FUDeletePurchaseResponse.h"
-#include "FUFeatureAvailabilityResult.h"
-#include "FUProductsResponse.h"
-#include "FUPurchaseInfoResponse.h"
-#include "FUPurchasesResponse.h"
+#include "FURuStoreConfirmPurchaseResponse.h"
+#include "FURuStoreDeletePurchaseResponse.h"
+#include "FURuStoreFeatureAvailabilityResult.h"
+#include "FURuStoreProductsResponse.h"
+#include "FURuStorePurchaseInfoResponse.h"
+#include "FURuStorePurchasesResponse.h"
 #include "FURuStoreBillingClientConfig.h"
 #include "FURuStoreError.h"
 #include "RuStoreListener.h"
-#include "FUPaymentResult.h"
-#include "UPaymentResultBase.h"
+#include "FURuStorePaymentResult.h"
+#include "URuStorePaymentResultBase.h"
 #include "URuStoreBillingClient.generated.h"
 
-using namespace std;
+using namespace RuStoreSDK;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FCheckPurchasesAvailabilityErrorDelegate, int64, requestId, FURuStoreError, error);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FCheckPurchasesAvailabilityResponseDelegate, int64, requestId, FUFeatureAvailabilityResult, response);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FRuStoreCheckPurchasesAvailabilityErrorDelegate, int64, requestId, FURuStoreError, error);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FRuStoreCheckPurchasesAvailabilityResponseDelegate, int64, requestId, FURuStoreFeatureAvailabilityResult, response);
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FGetProductsErrorDelegate, int64, requestId, FURuStoreError, error);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FGetProductsResponseDelegate, int64, requestId, FUProductsResponse, response);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FRuStoreGetProductsErrorDelegate, int64, requestId, FURuStoreError, error);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FRuStoreGetProductsResponseDelegate, int64, requestId, FURuStoreProductsResponse, response);
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FGetPurchasesErrorDelegate, int64, requestId, FURuStoreError, error);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FGetPurchasesResponseDelegate, int64, requestId, FUPurchasesResponse, response);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FRuStoreGetPurchasesErrorDelegate, int64, requestId, FURuStoreError, error);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FRuStoreGetPurchasesResponseDelegate, int64, requestId, FURuStorePurchasesResponse, response);
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FPurchaseProductErrorDelegate, int64, requestId, FURuStoreError, error);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FUPurchaseProductResponseDelegate, int64, requestId, UPaymentResultBase*, response);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FRuStorePurchaseProductErrorDelegate, int64, requestId, FURuStoreError, error);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FRuStoreUPurchaseProductResponseDelegate, int64, requestId, URuStorePaymentResultBase*, response);
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FConfirmPurchaseErrorDelegate, int64, requestId, FURuStoreError, error);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FConfirmPurchaseResponseDelegate, int64, requestId, FUConfirmPurchaseResponse, response);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FRuStoreConfirmPurchaseErrorDelegate, int64, requestId, FURuStoreError, error);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FRuStoreConfirmPurchaseResponseDelegate, int64, requestId, FURuStoreConfirmPurchaseResponse, response);
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FDeletePurchaseErrorDelegate, int64, requestId, FURuStoreError, error);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FDeletePurchaseResponseDelegate, int64, requestId, FUDeletePurchaseResponse, response);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FRuStoreDeletePurchaseErrorDelegate, int64, requestId, FURuStoreError, error);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FRuStoreDeletePurchaseResponseDelegate, int64, requestId, FURuStoreDeletePurchaseResponse, response);
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FGetPurchaseInfoErrorDelegate, int64, requestId, FURuStoreError, error);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FGetPurchaseInfoResponseDelegate, int64, requestId, FUPurchaseInfoResponse, response);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FRuStoreGetPurchaseInfoErrorDelegate, int64, requestId, FURuStoreError, error);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FRuStoreGetPurchaseInfoResponseDelegate, int64, requestId, FURuStorePurchaseInfoResponse, response);
 
 UCLASS(Blueprintable)
 class RUSTOREBILLING_API URuStoreBillingClient : public UObject, public RuStoreListenerContainer
@@ -64,26 +60,23 @@ class RUSTOREBILLING_API URuStoreBillingClient : public UObject, public RuStoreL
 
 private:
     static URuStoreBillingClient* _instance;
-    static bool _isInstanceInitialized;
+    static bool _bIsInstanceInitialized;
 
-    bool _allowNativeErrorHandling = false;
+    bool bIsInitialized = false;
+    bool _bAllowNativeErrorHandling = false;
     AndroidJavaObject* _clientWrapper = nullptr;
 
-    bool isInitialized = false;
-
 public:
+    static const FString PluginVersion;
+
     UFUNCTION(BlueprintCallable, Category = "RuStore Billing Client")
-    bool getIsInitialized();
+    bool getbIsInitialized();
 
     UFUNCTION(BlueprintCallable, Category = "RuStore Billing Client")
     static URuStoreBillingClient* Instance();
     
+    UFUNCTION(BlueprintCallable, Category = "RuStore Billing Client")
     void SetAllowNativeErrorHandling(bool value);
-
-    URuStoreBillingClient();
-    ~URuStoreBillingClient();
-
-    void BeginDestroy();
 
     UFUNCTION(BlueprintCallable, Category = "RuStore Billing Client")
     bool Init(FURuStoreBillingClientConfig config);
@@ -91,13 +84,15 @@ public:
     UFUNCTION(BlueprintCallable, Category = "RuStore Billing Client")
     void Dispose();
 
-    long CheckPurchasesAvailability(TFunction<void(long, FURuStoreError*)> onFailure, TFunction<void(long, FUFeatureAvailabilityResult*)> onSuccess);
-    long GetProducts(TArray<FString> productIds, TFunction<void(long, FURuStoreError*)> onFailure, TFunction<void(long, FUProductsResponse*)> onSuccess);
-    long GetPurchases(TFunction<void(long, FURuStoreError*)> onFailure, TFunction<void(long, FUPurchasesResponse*)> onSuccess);
-    long PurchaseProduct(FString productId, FString orderId, int quantity, FString developerPayload, TFunction<void(long, FURuStoreError*)> onFailure, TFunction<void(long, FUPaymentResult*)> onSuccess);
-    long ConfirmPurchase(FString purchaseId, TFunction<void(long, FURuStoreError*)> onFailure, TFunction<void(long, FUConfirmPurchaseResponse*)> onSuccess);
-    long DeletePurchase(FString purchaseId, TFunction<void(long, FURuStoreError*)> onFailure, TFunction<void(long, FUDeletePurchaseResponse*)> onSuccess);
-    long GetPurchaseInfo(FString purchaseId, TFunction<void(long, FURuStoreError*)> onFailure, TFunction<void(long, FUPurchaseInfoResponse*)> onSuccess);
+    void ConditionalBeginDestroy();
+
+    long CheckPurchasesAvailability(TFunction<void(long, TSharedPtr<FURuStoreFeatureAvailabilityResult, ESPMode::ThreadSafe>)> onSuccess, TFunction<void(long, TSharedPtr<FURuStoreError, ESPMode::ThreadSafe>)> onFailure);
+    long GetProducts(TArray<FString> productIds, TFunction<void(long, TSharedPtr<FURuStoreProductsResponse, ESPMode::ThreadSafe>)> onSuccess, TFunction<void(long, TSharedPtr<FURuStoreError, ESPMode::ThreadSafe>)> onFailure);
+    long GetPurchases(TFunction<void(long, TSharedPtr<FURuStorePurchasesResponse, ESPMode::ThreadSafe>)> onSuccess, TFunction<void(long, TSharedPtr<FURuStoreError, ESPMode::ThreadSafe>)> onFailure);
+    long PurchaseProduct(FString productId, FString orderId, int quantity, FString developerPayload, TFunction<void(long, TSharedPtr<FURuStorePaymentResult, ESPMode::ThreadSafe>)> onSuccess, TFunction<void(long, TSharedPtr<FURuStoreError, ESPMode::ThreadSafe>)> onFailure);
+    long ConfirmPurchase(FString purchaseId, TFunction<void(long, TSharedPtr<FURuStoreConfirmPurchaseResponse, ESPMode::ThreadSafe>)> onSuccess, TFunction<void(long, TSharedPtr<FURuStoreError, ESPMode::ThreadSafe>)> onFailure);
+    long DeletePurchase(FString purchaseId, TFunction<void(long, TSharedPtr<FURuStoreDeletePurchaseResponse, ESPMode::ThreadSafe>)> onSuccess, TFunction<void(long, TSharedPtr<FURuStoreError, ESPMode::ThreadSafe>)> onFailure);
+    long GetPurchaseInfo(FString purchaseId, TFunction<void(long, TSharedPtr<FURuStorePurchaseInfoResponse, ESPMode::ThreadSafe>)> onSuccess, TFunction<void(long, TSharedPtr<FURuStoreError, ESPMode::ThreadSafe>)> onFailure);
 
 
     // 
@@ -105,10 +100,10 @@ public:
     void CheckPurchasesAvailability(int64& requestId);
 
     UPROPERTY(BlueprintAssignable, Category = "RuStore Billing Client")
-    FCheckPurchasesAvailabilityErrorDelegate OnCheckPurchasesAvailabilityError;
+    FRuStoreCheckPurchasesAvailabilityErrorDelegate OnCheckPurchasesAvailabilityError;
 
     UPROPERTY(BlueprintAssignable, Category = "RuStore Billing Client")
-    FCheckPurchasesAvailabilityResponseDelegate OnCheckPurchasesAvailabilityResponse;
+    FRuStoreCheckPurchasesAvailabilityResponseDelegate OnCheckPurchasesAvailabilityResponse;
 
 
     // 
@@ -116,10 +111,10 @@ public:
     void GetProducts(TArray<FString> productIds, int64& requestId);
 
     UPROPERTY(BlueprintAssignable, Category = "RuStore Billing Client")
-    FGetProductsErrorDelegate OnGetProductsError;
+    FRuStoreGetProductsErrorDelegate OnGetProductsError;
 
     UPROPERTY(BlueprintAssignable, Category = "RuStore Billing Client")
-    FGetProductsResponseDelegate OnGetProductsResponse;
+    FRuStoreGetProductsResponseDelegate OnGetProductsResponse;
 
 
     // 
@@ -127,10 +122,10 @@ public:
     void GetPurchases(int64& requestId);
 
     UPROPERTY(BlueprintAssignable, Category = "RuStore Billing Client")
-    FGetPurchasesErrorDelegate OnGetPurchasesError;
+    FRuStoreGetPurchasesErrorDelegate OnGetPurchasesError;
 
     UPROPERTY(BlueprintAssignable, Category = "RuStore Billing Client")
-    FGetPurchasesResponseDelegate OnGetPurchasesResponse;
+    FRuStoreGetPurchasesResponseDelegate OnGetPurchasesResponse;
 
 
     // 
@@ -138,10 +133,10 @@ public:
     void PurchaseProduct(FString productId, FString orderId, int quantity, FString developerPayload, int64& requestId);
 
     UPROPERTY(BlueprintAssignable, Category = "RuStore Billing Client")
-    FPurchaseProductErrorDelegate OnPurchaseProductError;
+    FRuStorePurchaseProductErrorDelegate OnPurchaseProductError;
 
     UPROPERTY(BlueprintAssignable, Category = "RuStore Billing Client")
-    FUPurchaseProductResponseDelegate OnPurchaseProductResponse;
+    FRuStoreUPurchaseProductResponseDelegate OnPurchaseProductResponse;
 
 
     // 
@@ -149,10 +144,10 @@ public:
     void ConfirmPurchase(FString purchaseId, int64& requestId);
 
     UPROPERTY(BlueprintAssignable, Category = "RuStore Billing Client")
-    FConfirmPurchaseErrorDelegate OnConfirmPurchaseError;
+    FRuStoreConfirmPurchaseErrorDelegate OnConfirmPurchaseError;
 
     UPROPERTY(BlueprintAssignable, Category = "RuStore Billing Client")
-    FConfirmPurchaseResponseDelegate OnConfirmPurchaseResponse;
+    FRuStoreConfirmPurchaseResponseDelegate OnConfirmPurchaseResponse;
 
 
     // 
@@ -160,10 +155,10 @@ public:
     void DeletePurchase(FString purchaseId, int64& requestId);
 
     UPROPERTY(BlueprintAssignable, Category = "RuStore Billing Client")
-    FDeletePurchaseErrorDelegate OnDeletePurchaseError;
+    FRuStoreDeletePurchaseErrorDelegate OnDeletePurchaseError;
 
     UPROPERTY(BlueprintAssignable, Category = "RuStore Billing Client")
-    FDeletePurchaseResponseDelegate OnDeletePurchaseResponse;
+    FRuStoreDeletePurchaseResponseDelegate OnDeletePurchaseResponse;
 
 
     // 
@@ -171,8 +166,8 @@ public:
     void GetPurchaseInfo(FString purchaseId, int64& requestId);
 
     UPROPERTY(BlueprintAssignable, Category = "RuStore Billing Client")
-    FGetPurchaseInfoErrorDelegate OnPurchaseInfoError;
+    FRuStoreGetPurchaseInfoErrorDelegate OnPurchaseInfoError;
 
     UPROPERTY(BlueprintAssignable, Category = "RuStore Billing Client")
-    FGetPurchaseInfoResponseDelegate OnPurchaseInfoResponse;
+    FRuStoreGetPurchaseInfoResponseDelegate OnPurchaseInfoResponse;
 };

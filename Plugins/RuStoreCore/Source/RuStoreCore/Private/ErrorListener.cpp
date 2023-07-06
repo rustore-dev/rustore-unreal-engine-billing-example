@@ -1,41 +1,29 @@
+// Copyright Epic Games, Inc. All Rights Reserved.
+
 #include "ErrorListener.h"
 
-ErrorListener::ErrorListener(FString className, TFunction<void(FURuStoreError*)> onFailure)
-{
-    _onFailure = onFailure;
+using namespace RuStoreSDK;
 
-#if PLATFORM_ANDROID
-    cppPointer = reinterpret_cast<long>(this);
-    auto a = new AndroidJavaObject(className, cppPointer);
-    wrapperJavaObject = a->GetJObject();
-#endif
-}
-
-AndroidJavaObject* ErrorListener::GetJListener(FString className)
+ErrorListener::~ErrorListener()
 {
-    AndroidJavaObject* result = nullptr;
-#if PLATFORM_ANDROID
-    result = new AndroidJavaObject(wrapperJavaObject, className);
-#endif
-    return result;
 }
 
 FURuStoreError* ErrorListener::ConvertError(AndroidJavaObject* errorObject)
 {
-    auto error = new FURuStoreError();
-
-    error->name = errorObject->CallJavaClassFString("getSimpleName");
-    error->description = errorObject->CallFString("getMessage");
-
-    return error;
+    return ErrorConverter::Convert(errorObject);
 }
 
 void ErrorListener::OnFailure(AndroidJavaObject* errorObject)
 {
-    FURuStoreError* error = ConvertError(errorObject);
+    auto error = TSharedPtr<FURuStoreError, ESPMode::ThreadSafe>(ConvertError(errorObject));
     delete errorObject;
 
-    CallbackHandler::AddCallback([this, error]() {
-        _onFailure(error);
+    auto listener = GetWeakPtr();
+    CallbackHandler::AddCallback([this, listener, error]() {
+        if (listener.IsValid())
+        {
+            this->_onFailure(this->GetId(), error);
+            this->_onFinish(this);
+        }
     });
 }

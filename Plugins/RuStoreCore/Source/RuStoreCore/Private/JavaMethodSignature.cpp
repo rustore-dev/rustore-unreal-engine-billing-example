@@ -1,4 +1,8 @@
+// Copyright Epic Games, Inc. All Rights Reserved.
+
 #include "JavaMethodSignature.h"
+
+using namespace RuStoreSDK;
 
 template <typename T>
 FString JavaMethodSignature::getName(T) { return TEXT(""); }
@@ -17,12 +21,3 @@ FString JavaMethodSignature::getName(float) { return TEXT("F"); }
 FString JavaMethodSignature::getName(double) { return TEXT("D"); }
 FString JavaMethodSignature::getName(FString&) { return TEXT("Ljava/lang/String;"); }
 FString JavaMethodSignature::getName(TArray<FString>&) { return TEXT("[Ljava/lang/String;"); }
-
-#if PLATFORM_ANDROID
-template <> FString JavaMethodSignature::jtypeName<void> = "V";
-template <> FString JavaMethodSignature::jtypeName<int> = "I";
-template <> FString JavaMethodSignature::jtypeName<long> = "J";
-template <> FString JavaMethodSignature::jtypeName<FString> = "Ljava/lang/String;";
-//template <> FString JavaMethodSignature::jtypeName<AndroidJavaClass*> = "Ljava/lang/Class;";
-template <> FString JavaMethodSignature::jtypeName<AndroidJavaObject*> = "Ljava/lang/Object;";
-#endif

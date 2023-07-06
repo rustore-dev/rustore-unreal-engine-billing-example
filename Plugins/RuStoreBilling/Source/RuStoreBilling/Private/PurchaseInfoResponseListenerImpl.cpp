@@ -1,8 +1,12 @@
+// Copyright Epic Games, Inc. All Rights Reserved.
+
 #include "PurchaseInfoResponseListenerImpl.h"
 
-FUPurchaseInfoResponse* PurchaseInfoResponseListenerImpl::ConvertResponse(AndroidJavaObject* responseObject)
+using namespace RuStoreSDK;
+
+FURuStorePurchaseInfoResponse* PurchaseInfoResponseListenerImpl::ConvertResponse(AndroidJavaObject* responseObject)
 {
-    auto response = new FUPurchaseInfoResponse();
+    auto response = new FURuStorePurchaseInfoResponse();
 
     DataConverter::InitResponseWithCode(responseObject, response);
 
@@ -26,17 +30,19 @@ extern "C"
 {
     JNIEXPORT void JNICALL Java_com_Plugins_RuStoreBilling_PurchaseInfoResponseListenerWrapper_NativeOnFailure(JNIEnv*, jobject, jlong pointer, jthrowable throwable)
     {
-        auto castobj = reinterpret_cast<ResponseListener<FUPurchaseInfoResponse>*>(pointer);
         auto obj = new AndroidJavaObject(throwable);
         obj->UpdateToGlobalRef();
+
+        auto castobj = reinterpret_cast<PurchaseInfoResponseListenerImpl*>(pointer);
         castobj->OnFailure(obj);
     }
 
     JNIEXPORT void JNICALL Java_com_Plugins_RuStoreBilling_PurchaseInfoResponseListenerWrapper_NativeOnSuccess(JNIEnv*, jobject, jlong pointer, jobject result)
     {
-        auto castobj = reinterpret_cast<ResponseListener<FUPurchaseInfoResponse>*>(pointer);
         auto obj = new AndroidJavaObject(result);
         obj->UpdateToGlobalRef();
+
+        auto castobj = reinterpret_cast<PurchaseInfoResponseListenerImpl*>(pointer);
         castobj->OnSuccess(obj);
     }
 }
