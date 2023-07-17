@@ -6,7 +6,6 @@
 #include "Misc/DateTime.h"
 #include "FURuStoreProduct.h"
 #include "FURuStorePurchase.h"
-#include "FURuStoreRequestMeta.h"
 #include "FURuStoreResponseWithCode.h"
 #include "AndroidJavaClass.h"
 
@@ -15,7 +14,6 @@ namespace RuStoreSDK
     class DataConverter
     {
     public:
-        static FURuStoreRequestMeta* ConvertRequestMeta(AndroidJavaObject* obj);
         static FURuStoreProduct* ConvertProduct(AndroidJavaObject* obj);
         static FURuStoreDigitalShopGeneralError* ConvertFURuStoreDigitalShopGeneralError(AndroidJavaObject* obj);
         static FURuStoreProductSubscription* ConvertFURuStoreProductSubscription(AndroidJavaObject* obj);

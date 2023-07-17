@@ -4,25 +4,9 @@
 
 using namespace RuStoreSDK;
 
-FURuStorePurchaseInfoResponse* PurchaseInfoResponseListenerImpl::ConvertResponse(AndroidJavaObject* responseObject)
+FURuStorePurchase* PurchaseInfoResponseListenerImpl::ConvertResponse(AndroidJavaObject* responseObject)
 {
-    auto response = new FURuStorePurchaseInfoResponse();
-
-    DataConverter::InitResponseWithCode(responseObject, response);
-
-    auto meta = responseObject->GetAJObject("meta", "Lru/rustore/sdk/billingclient/model/common/RequestMeta;");
-    if (meta != nullptr)
-    {
-        response->meta = *DataConverter::ConvertRequestMeta(meta);
-    }
-
-    auto purchase = responseObject->GetAJObject("purchase", "Lru/rustore/sdk/billingclient/model/purchase/Purchase;");
-    if (purchase != nullptr)
-    {
-        response->purchase = *DataConverter::ConvertPurchase(purchase);
-    }
-
-    return response;
+    return DataConverter::ConvertPurchase(responseObject);
 }
 
 #if PLATFORM_ANDROID

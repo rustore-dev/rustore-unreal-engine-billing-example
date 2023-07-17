@@ -1,11 +1,9 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "PaymentResultListenerImpl.h"
-#include "EURuStorePaymentFinishCode.h"
-#include "FURuStoreInvoiceResult.h"
-#include "FURuStoreInvalidInvoice.h"
-#include "FURuStorePurchaseResult.h"
-#include "FURuStoreInvalidPurchase.h"
+#include "FURuStoreSuccess.h"
+#include "FURuStoreCancelled.h"
+#include "FURuStoreFailure.h"
 #include "FURuStoreInvalidPaymentState.h"
 
 using namespace RuStoreSDK;
@@ -23,52 +21,29 @@ FURuStorePaymentResult* PaymentResultListenerImpl::ConvertResponse(AndroidJavaOb
 
     delete javaClass;
 
-    if (resultType == "InvoiceResult")
+    if (resultType == "Success")
     {
-        auto result = new FURuStoreInvoiceResult();
-        result->invoiceId = responseObject->GetFString("invoiceId");
-
-        auto jPaymentFinishCode = responseObject->GetAJObject("finishCode", "Lru/rustore/sdk/billingclient/model/purchase/PaymentFinishCode;");
-        if (jPaymentFinishCode != nullptr)
-        {
-            int ordinal = jPaymentFinishCode->CallInt("ordinal");
-            result->finishCode = static_cast<EURuStorePaymentFinishCode>(ordinal);
-
-            delete jPaymentFinishCode;
-        }
-
-        return result;
-    }
-    else if (resultType == "InvalidInvoice")
-    {
-        auto result = new FURuStoreInvalidInvoice();
-        result->invoiceId = responseObject->GetFString("invoiceId");
-
-        return result;
-    }
-    else if (resultType == "PurchaseResult")
-    {
-        auto result = new FURuStorePurchaseResult();
-
-        auto jPaymentFinishCode = responseObject->GetAJObject("finishCode", "Lru/rustore/sdk/billingclient/model/purchase/PaymentFinishCode;");
-        if (jPaymentFinishCode != nullptr)
-        {
-            int ordinal = jPaymentFinishCode->CallInt("ordinal");
-            result->finishCode = static_cast<EURuStorePaymentFinishCode>(ordinal);
-
-            delete jPaymentFinishCode;
-        }
+        auto result = new FURuStoreSuccess();
 
         result->orderId = responseObject->GetFString("orderId");
         result->purchaseId = responseObject->GetFString("purchaseId");
         result->productId = responseObject->GetFString("productId");
+        result->invoiceId = responseObject->GetFString("invoiceId");
         result->subscriptionToken = responseObject->GetFString("subscriptionToken");
 
         return result;
     }
-    else if (resultType == "InvalidPurchase")
+    else if (resultType == "Cancelled")
     {
-        auto result = new FURuStoreInvalidPurchase();
+        auto result = new FURuStoreCancelled();
+        result->purchaseId = responseObject->GetFString("purchaseId");
+
+        return result;
+    }
+    else if (resultType == "Failure")
+    {
+        auto result = new FURuStoreFailure();
+
         result->purchaseId = responseObject->GetFString("purchaseId");
         result->invoiceId = responseObject->GetFString("invoiceId");
         result->orderId = responseObject->GetFString("orderId");

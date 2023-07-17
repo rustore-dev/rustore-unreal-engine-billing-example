@@ -3,10 +3,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "URuStorePaymentResultBase.generated.h"
+#include "URuStorePaymentResultClass.generated.h"
 
 UCLASS(BlueprintType)
-class RUSTOREBILLING_API URuStorePaymentResultBase : public UObject
+class RUSTOREBILLING_API URuStorePaymentResultClass : public UObject
 {
     GENERATED_BODY()
 };

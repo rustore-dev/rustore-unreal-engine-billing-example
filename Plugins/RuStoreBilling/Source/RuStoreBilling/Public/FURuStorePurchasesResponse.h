@@ -8,7 +8,7 @@
 #include "FURuStorePurchasesResponse.generated.h"
 
 USTRUCT(BlueprintType)
-struct FURuStorePurchasesResponse : public FURuStoreResponseWithCode
+struct FURuStorePurchasesResponse
 {
 	GENERATED_USTRUCT_BODY()
 

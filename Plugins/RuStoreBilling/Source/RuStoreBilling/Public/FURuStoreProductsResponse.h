@@ -9,7 +9,7 @@
 #include "FURuStoreProductsResponse.generated.h"
 
 USTRUCT(BlueprintType)
-struct FURuStoreProductsResponse : public FURuStoreResponseWithCode
+struct FURuStoreProductsResponse
 {
 	GENERATED_USTRUCT_BODY()
 
