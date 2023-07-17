@@ -4,7 +4,6 @@ package com.Plugins.RuStoreBilling;
 
 import com.Plugins.RuStoreCore.IRuStoreListener;
 import ru.rustore.unitysdk.billingclient.callbacks.ConfirmPurchaseListener;
-import ru.rustore.sdk.billingclient.model.purchase.response.ConfirmPurchaseResponse;
 
 public class ConfirmPurchaseResponseListenerWrapper implements IRuStoreListener, ConfirmPurchaseListener
 {
@@ -12,7 +11,7 @@ public class ConfirmPurchaseResponseListenerWrapper implements IRuStoreListener,
     private long cppPointer = 0;
 
     private native void NativeOnFailure(long pointer, Throwable throwable);
-    private native void NativeOnSuccess(long pointer, ConfirmPurchaseResponse response);
+    private native void NativeOnSuccess(long pointer);
 
     public ConfirmPurchaseResponseListenerWrapper(long cppPointer) {
         this.cppPointer = cppPointer;
@@ -28,10 +27,10 @@ public class ConfirmPurchaseResponseListenerWrapper implements IRuStoreListener,
     }
 
     @Override
-    public void OnSuccess(ConfirmPurchaseResponse response) {
+    public void OnSuccess() {
         synchronized (mutex) {
             if (cppPointer != 0) {
-                NativeOnSuccess(cppPointer, response);
+                NativeOnSuccess(cppPointer);
             }
         }
     }

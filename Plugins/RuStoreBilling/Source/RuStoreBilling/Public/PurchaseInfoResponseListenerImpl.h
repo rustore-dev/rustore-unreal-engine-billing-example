@@ -3,23 +3,23 @@
 #pragma once
 
 #include "ResponseListener.h"
-#include "FURuStorePurchaseInfoResponse.h"
+#include "FURuStorePurchase.h"
 #include "DataConverter.h"
 
 namespace RuStoreSDK
 {
-    class RUSTOREBILLING_API PurchaseInfoResponseListenerImpl : public ResponseListener<FURuStorePurchaseInfoResponse>
+    class RUSTOREBILLING_API PurchaseInfoResponseListenerImpl : public ResponseListener<FURuStorePurchase>
     {
     public:
         PurchaseInfoResponseListenerImpl(
-            TFunction<void(long, TSharedPtr<FURuStorePurchaseInfoResponse, ESPMode::ThreadSafe>)> onSuccess,
+            TFunction<void(long, TSharedPtr<FURuStorePurchase, ESPMode::ThreadSafe>)> onSuccess,
             TFunction<void(long, TSharedPtr<FURuStoreError, ESPMode::ThreadSafe>)> onFailure,
             TFunction<void(RuStoreListener*)> onFinish
-        ) : ResponseListener<FURuStorePurchaseInfoResponse>("com/Plugins/RuStoreBilling/PurchaseInfoResponseListenerWrapper", "ru/rustore/unitysdk/billingclient/callbacks/PurchaseInfoResponseListener", onSuccess, onFailure, onFinish)
+        ) : ResponseListener<FURuStorePurchase>("com/Plugins/RuStoreBilling/PurchaseInfoResponseListenerWrapper", "ru/rustore/unitysdk/billingclient/callbacks/PurchaseInfoResponseListener", onSuccess, onFailure, onFinish)
         {
         }
 
     protected:
-        FURuStorePurchaseInfoResponse* ConvertResponse(AndroidJavaObject* responseObject) override;
+        FURuStorePurchase* ConvertResponse(AndroidJavaObject* responseObject) override;
     };
 }

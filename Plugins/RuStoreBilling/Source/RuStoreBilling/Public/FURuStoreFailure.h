@@ -4,15 +4,15 @@
 
 #include "CoreMinimal.h"
 #include "FURuStorePaymentResult.h"
-#include "FURuStoreInvalidPurchase.generated.h"
+#include "FURuStoreFailure.generated.h"
 
 USTRUCT(BlueprintType)
-struct RUSTOREBILLING_API FURuStoreInvalidPurchase : public FURuStorePaymentResult
+struct RUSTOREBILLING_API FURuStoreFailure : public FURuStorePaymentResult
 {
     GENERATED_USTRUCT_BODY()
 
 public:
-    FURuStoreInvalidPurchase()
+    FURuStoreFailure()
     {
         purchaseId = "";
         invoiceId = "";
@@ -21,8 +21,6 @@ public:
         productId = "";
         errorCode = 0;
     }
-
-    virtual ~FURuStoreInvalidPurchase() {}
 
     UPROPERTY(BlueprintReadOnly)
     FString purchaseId;
@@ -42,5 +40,5 @@ public:
     UPROPERTY(BlueprintReadOnly)
     int errorCode;
 
-    virtual FString GetTypeName() override { return "FURuStoreInvalidPurchase"; }
+    virtual FString GetTypeName() override { return "FURuStoreFailure"; }
 };

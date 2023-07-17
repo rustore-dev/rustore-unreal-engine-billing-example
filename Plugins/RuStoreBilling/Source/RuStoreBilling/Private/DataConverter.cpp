@@ -4,16 +4,6 @@
 
 using namespace RuStoreSDK;
 
-FURuStoreRequestMeta* DataConverter::ConvertRequestMeta(AndroidJavaObject* obj)
-{
-    if (obj == nullptr) return nullptr;
-
-    auto requestMeta = new FURuStoreRequestMeta();
-    requestMeta->traceId = obj->GetFString("traceId");
-
-    return requestMeta;
-}
-
 FURuStoreProduct* DataConverter::ConvertProduct(AndroidJavaObject* obj)
 {
     if (obj == nullptr) return nullptr;
