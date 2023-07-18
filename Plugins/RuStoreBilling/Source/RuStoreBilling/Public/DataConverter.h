@@ -6,7 +6,6 @@
 #include "Misc/DateTime.h"
 #include "FURuStoreProduct.h"
 #include "FURuStorePurchase.h"
-#include "FURuStoreResponseWithCode.h"
 #include "AndroidJavaClass.h"
 
 namespace RuStoreSDK
@@ -15,10 +14,8 @@ namespace RuStoreSDK
     {
     public:
         static FURuStoreProduct* ConvertProduct(AndroidJavaObject* obj);
-        static FURuStoreDigitalShopGeneralError* ConvertFURuStoreDigitalShopGeneralError(AndroidJavaObject* obj);
         static FURuStoreProductSubscription* ConvertFURuStoreProductSubscription(AndroidJavaObject* obj);
         static FURuStoreSubscriptionPeriod* ConvertFURuStoreSubscriptionPeriod(AndroidJavaObject* obj);
         static FURuStorePurchase* ConvertPurchase(AndroidJavaObject* obj);
-        static void InitResponseWithCode(AndroidJavaObject* obj, FURuStoreResponseWithCode* response);
     };
 }

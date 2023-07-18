@@ -72,25 +72,6 @@ FURuStoreProduct* DataConverter::ConvertProduct(AndroidJavaObject* obj)
     return product;
 }
 
-FURuStoreDigitalShopGeneralError* DataConverter::ConvertFURuStoreDigitalShopGeneralError(AndroidJavaObject* obj)
-{
-    if (obj == nullptr) return nullptr;
-
-    auto error = new FURuStoreDigitalShopGeneralError();
-    error->name = obj->GetFString("name");
-
-    auto codeObj = obj->GetAJObject("code");
-    if (codeObj != nullptr)
-    {
-        error->code = codeObj->CallInt("intValue");
-    }
-    delete codeObj;
-
-    error->description = obj->GetFString("description");
-
-    return error;
-}
-
 FURuStoreProductSubscription* DataConverter::ConvertFURuStoreProductSubscription(AndroidJavaObject* obj)
 {
     if (obj == nullptr) return nullptr;
@@ -210,29 +191,4 @@ FURuStorePurchase* DataConverter::ConvertPurchase(AndroidJavaObject* obj)
     purchase->subscriptionToken = obj->GetFString("subscriptionToken");
 
     return purchase;
-}
-
-void DataConverter::InitResponseWithCode(AndroidJavaObject* obj, FURuStoreResponseWithCode* response)
-{
-    response->code = obj->GetInt("code");
-    response->errorMessage = obj->GetFString("errorMessage");
-    response->errorDescription = obj->GetFString("errorDescription");
-
-    auto errors = obj->GetAJObject("errors", "Ljava/util/List;");
-    if (errors != nullptr)
-    {
-        auto size = errors->CallInt("size");
-        for (int i = 0; i < size; i++)
-        {
-            auto e = errors->CallAJObject("get", i);
-            if (e != nullptr)
-            {
-                auto item = ConvertFURuStoreDigitalShopGeneralError(e);
-                response->errors.Add(*item);
-            }
-            delete e;
-        }
-
-        delete errors;
-    }
 }
