@@ -50,7 +50,7 @@
       
       dependencies {
         // RuStore Billing
-        if (project.hasProperty('billing_type')) {
+        if (project.hasProperty("rustore_sdk_type")) {
           implementation ("ru.rustore.sdk:billingclient:2.1.1$billing_type")
         } else {
           implementation ("ru.rustore.sdk:billingclient:2.1.0")
