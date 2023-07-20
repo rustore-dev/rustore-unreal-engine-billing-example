@@ -56,7 +56,7 @@ bool URuStoreBillingClient::Init(FURuStoreBillingClientConfig config)
 
     auto clientJavaClass = MakeShared<AndroidJavaClass>("ru/rustore/unitysdk/billingclient/RuStoreUnityBillingClient");
     _clientWrapper = clientJavaClass->GetStaticAJObject("INSTANCE");
-    _clientWrapper->CallVoid("init", config.consoleApplicationId, config.deeplinkScheme, config.allowNativeErrorHandling, config.enableLogs);
+    _clientWrapper->CallVoid("init", config.consoleApplicationId, config.deeplinkScheme, config.allowNativeErrorHandling, config.enableLogs, FString("Unreal"));
 
     SetAllowNativeErrorHandling(config.allowNativeErrorHandling);
 
