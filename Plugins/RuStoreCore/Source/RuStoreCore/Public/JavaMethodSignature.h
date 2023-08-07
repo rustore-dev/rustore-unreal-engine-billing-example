@@ -33,6 +33,8 @@ namespace RuStoreSDK
         static FString getName(double);
         static FString getName(FString&);
         static FString getName(TArray<FString>&);
+        static FString getName(TArray<uint8>&);
+        static FString getName(TArray<uint8>*);
 
         template <typename... Args>
         static FString Constuct(Args... args)
@@ -92,6 +94,12 @@ namespace RuStoreSDK
         static FString MakeSpecificAJObject(FString signature, Args... args)
         {
             return Constuct(getName(args)...) + signature;
+        }
+
+        template <typename... Args>
+        static FString MakeByteArray(Args... args)
+        {
+            return Constuct(getName(args)...) + "[B";
         }
     };
 }

@@ -9,20 +9,21 @@
 #include "ConfirmPurchaseResponseListenerImpl.h"
 #include "DeletePurchaseResponseListenerImpl.h"
 #include "PurchaseInfoResponseListenerImpl.h"
-
-#include "URuStoreInvalidInvoice.h"
+#include "URuStoreCancelled.h"
+#include "URuStoreFailure.h"
 #include "URuStoreInvalidPaymentState.h"
-#include "URuStoreInvalidPurchase.h"
-#include "URuStoreInvoiceResult.h"
-#include "URuStorePurchaseResult.h"
+#include "URuStoreSuccess.h"
 
 using namespace RuStoreSDK;
 
-const FString URuStoreBillingClient::PluginVersion = "0.1";
+const FString URuStoreBillingClient::PluginVersion = "0.2";
 URuStoreBillingClient* URuStoreBillingClient::_instance = nullptr;
 bool URuStoreBillingClient::_bIsInstanceInitialized = false;
 
-bool URuStoreBillingClient::getbIsInitialized() { return bIsInitialized; }
+bool URuStoreBillingClient::GetIsInitialized()
+{
+    return bIsInitialized;
+}
 
 URuStoreBillingClient* URuStoreBillingClient::Instance()
 {
@@ -55,7 +56,7 @@ bool URuStoreBillingClient::Init(FURuStoreBillingClientConfig config)
 
     auto clientJavaClass = MakeShared<AndroidJavaClass>("ru/rustore/unitysdk/billingclient/RuStoreUnityBillingClient");
     _clientWrapper = clientJavaClass->GetStaticAJObject("INSTANCE");
-    _clientWrapper->CallVoid("init", config.consoleApplicationId, config.deeplinkScheme, config.allowNativeErrorHandling, config.enableLogs);
+    _clientWrapper->CallVoid("init", config.consoleApplicationId, config.deeplinkScheme, config.allowNativeErrorHandling, config.enableLogs, FString("unreal"));
 
     SetAllowNativeErrorHandling(config.allowNativeErrorHandling);
 
@@ -125,7 +126,7 @@ long URuStoreBillingClient::PurchaseProduct(FString productId, FString orderId, 
     return listener->GetId();
 }
 
-long URuStoreBillingClient::ConfirmPurchase(FString purchaseId, TFunction<void(long, TSharedPtr<FURuStoreConfirmPurchaseResponse, ESPMode::ThreadSafe>)> onSuccess, TFunction<void(long, TSharedPtr<FURuStoreError, ESPMode::ThreadSafe>)> onFailure)
+long URuStoreBillingClient::ConfirmPurchase(FString purchaseId, TFunction<void(long)> onSuccess, TFunction<void(long, TSharedPtr<FURuStoreError, ESPMode::ThreadSafe>)> onFailure)
 {
     if (!URuStoreCore::IsPlatformSupported(onFailure)) return 0;
     if (!bIsInitialized) return 0;
@@ -136,7 +137,7 @@ long URuStoreBillingClient::ConfirmPurchase(FString purchaseId, TFunction<void(l
     return listener->GetId();
 }
 
-long URuStoreBillingClient::DeletePurchase(FString purchaseId, TFunction<void(long, TSharedPtr<FURuStoreDeletePurchaseResponse, ESPMode::ThreadSafe>)> onSuccess, TFunction<void(long, TSharedPtr<FURuStoreError, ESPMode::ThreadSafe>)> onFailure)
+long URuStoreBillingClient::DeletePurchase(FString purchaseId, TFunction<void(long)> onSuccess, TFunction<void(long, TSharedPtr<FURuStoreError, ESPMode::ThreadSafe>)> onFailure)
 {
     if (!URuStoreCore::IsPlatformSupported(onFailure)) return 0;
     if (!bIsInitialized) return 0;
@@ -147,7 +148,7 @@ long URuStoreBillingClient::DeletePurchase(FString purchaseId, TFunction<void(lo
     return listener->GetId();
 }
 
-long URuStoreBillingClient::GetPurchaseInfo(FString purchaseId, TFunction<void(long, TSharedPtr<FURuStorePurchaseInfoResponse, ESPMode::ThreadSafe>)> onSuccess, TFunction<void(long, TSharedPtr<FURuStoreError, ESPMode::ThreadSafe>)> onFailure)
+long URuStoreBillingClient::GetPurchaseInfo(FString purchaseId, TFunction<void(long, TSharedPtr<FURuStorePurchase, ESPMode::ThreadSafe>)> onSuccess, TFunction<void(long, TSharedPtr<FURuStoreError, ESPMode::ThreadSafe>)> onFailure)
 {
     if (!URuStoreCore::IsPlatformSupported(onFailure)) return 0;
     if (!bIsInitialized) return 0;
@@ -206,45 +207,33 @@ void URuStoreBillingClient::PurchaseProduct(FString productId, FString orderId, 
         [this](long requestId, TSharedPtr<FURuStorePaymentResult, ESPMode::ThreadSafe> response) {
 
             FString responseType = response->GetTypeName();
-            if (responseType == "FURuStoreInvalidInvoice")
+            if (responseType == "FURuStoreSuccess")
             {
-                auto object = NewObject<URuStoreInvalidInvoice>(GetTransientPackage());
-                object->value = *StaticCastSharedPtr<FURuStoreInvalidInvoice>(response);
+                auto object = NewObject<URuStoreSuccess>(GetTransientPackage());
+                object->value = *StaticCastSharedPtr<FURuStoreSuccess>(response);
                 OnPurchaseProductResponse.Broadcast(requestId, object);
             }
             else
             {
-                if (responseType == "FURuStoreInvalidPaymentState")
+                if (responseType == "FURuStoreCancelled")
                 {
-                    auto object = NewObject<URuStoreInvalidPaymentState>(GetTransientPackage());
-                    object->value = *StaticCastSharedPtr<FURuStoreInvalidPaymentState>(response);
+                    auto object = NewObject<URuStoreCancelled>(GetTransientPackage());
+                    object->value = *StaticCastSharedPtr<FURuStoreCancelled>(response);
                     OnPurchaseProductResponse.Broadcast(requestId, object);
                 }
                 else
                 {
-                    if (responseType == "FURuStoreInvalidPurchase")
+                    if (responseType == "FURuStoreFailure")
                     {
-                        auto object = NewObject<URuStoreInvalidPurchase>(GetTransientPackage());
-                        object->value = *StaticCastSharedPtr<FURuStoreInvalidPurchase>(response);
+                        auto object = NewObject<URuStoreFailure>(GetTransientPackage());
+                        object->value = *StaticCastSharedPtr<FURuStoreFailure>(response);
                         OnPurchaseProductResponse.Broadcast(requestId, object);
                     }
                     else
                     {
-                        if (responseType == "FURuStoreInvoiceResult")
-                        {
-                            auto object = NewObject<URuStoreInvoiceResult>(GetTransientPackage());
-                            object->value = *StaticCastSharedPtr<FURuStoreInvoiceResult>(response);
-                            OnPurchaseProductResponse.Broadcast(requestId, object);
-                        }
-                        else
-                        {
-                            if (responseType == "FURuStorePurchaseResult")
-                            {
-                                auto object = NewObject<URuStorePurchaseResult>(GetTransientPackage());
-                                object->value = *StaticCastSharedPtr<FURuStorePurchaseResult>(response);
-                                OnPurchaseProductResponse.Broadcast(requestId, object);
-                            }
-                        }
+                        auto object = NewObject<URuStoreInvalidPaymentState>(GetTransientPackage());
+                        object->value = *StaticCastSharedPtr<FURuStoreInvalidPaymentState>(response);
+                        OnPurchaseProductResponse.Broadcast(requestId, object);
                     }
                 }
             }
@@ -259,8 +248,8 @@ void URuStoreBillingClient::ConfirmPurchase(FString purchaseId, int64& requestId
 {
     requestId = ConfirmPurchase(
         purchaseId,
-        [this](long requestId, TSharedPtr<FURuStoreConfirmPurchaseResponse, ESPMode::ThreadSafe> response) {
-            OnConfirmPurchaseResponse.Broadcast(requestId, *response);
+        [this](long requestId) {
+            OnConfirmPurchaseResponse.Broadcast(requestId);
         },
         [this](long requestId, TSharedPtr<FURuStoreError, ESPMode::ThreadSafe> error) {
             OnConfirmPurchaseError.Broadcast(requestId, *error);
@@ -272,8 +261,8 @@ void URuStoreBillingClient::DeletePurchase(FString purchaseId, int64& requestId)
 {
     requestId = DeletePurchase(
         purchaseId,
-        [this](long requestId, TSharedPtr<FURuStoreDeletePurchaseResponse, ESPMode::ThreadSafe> response) {
-            OnDeletePurchaseResponse.Broadcast(requestId, *response);
+        [this](long requestId) {
+            OnDeletePurchaseResponse.Broadcast(requestId);
         },
         [this](long requestId, TSharedPtr<FURuStoreError, ESPMode::ThreadSafe> error) {
             OnDeletePurchaseError.Broadcast(requestId, *error);
@@ -285,7 +274,7 @@ void URuStoreBillingClient::GetPurchaseInfo(FString purchaseId, int64& requestId
 {
     requestId = GetPurchaseInfo(
         purchaseId,
-        [this](long requestId, TSharedPtr<FURuStorePurchaseInfoResponse, ESPMode::ThreadSafe> response) {
+        [this](long requestId, TSharedPtr<FURuStorePurchase, ESPMode::ThreadSafe> response) {
             OnPurchaseInfoResponse.Broadcast(requestId, *response);
         },
         [this](long requestId, TSharedPtr<FURuStoreError, ESPMode::ThreadSafe> error) {

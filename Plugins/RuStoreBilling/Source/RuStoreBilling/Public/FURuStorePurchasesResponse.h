@@ -3,12 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "FURuStoreResponseWithCode.h"
 #include "FURuStorePurchase.h"
 #include "FURuStorePurchasesResponse.generated.h"
 
 USTRUCT(BlueprintType)
-struct FURuStorePurchasesResponse : public FURuStoreResponseWithCode
+struct FURuStorePurchasesResponse
 {
 	GENERATED_USTRUCT_BODY()
 

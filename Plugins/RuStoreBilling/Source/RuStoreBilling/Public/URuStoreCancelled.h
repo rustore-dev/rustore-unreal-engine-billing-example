@@ -3,16 +3,16 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "FURuStoreInvalidPaymentState.h"
+#include "FURuStoreCancelled.h"
 #include "URuStorePaymentResultClass.h"
-#include "URuStoreInvalidPaymentState.generated.h"
+#include "URuStoreCancelled.generated.h"
 
 UCLASS(BlueprintType)
-class RUSTOREBILLING_API URuStoreInvalidPaymentState : public URuStorePaymentResultClass
+class RUSTOREBILLING_API URuStoreCancelled : public URuStorePaymentResultClass
 {
     GENERATED_BODY()
 
 public:
     UPROPERTY(BlueprintReadOnly)
-    FURuStoreInvalidPaymentState value;
+    FURuStoreCancelled value;
 };

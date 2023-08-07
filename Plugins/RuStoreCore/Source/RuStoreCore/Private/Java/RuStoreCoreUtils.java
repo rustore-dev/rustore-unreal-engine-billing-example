@@ -3,11 +3,21 @@
 package com.Plugins.RuStoreCore;
 
 import android.app.Activity;
+import android.content.ClipboardManager;
+import android.content.ClipData;
+import android.content.Context;
 import android.support.annotation.Keep;
 import android.widget.Toast;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
+
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 @Keep
 public class RuStoreCoreUtils
@@ -17,11 +27,8 @@ public class RuStoreCoreUtils
 	{
 		activity.runOnUiThread(new Runnable() {
 			@Override
-			public void run()
-			{
+			public void run() {
 				Toast.makeText(activity, message, Toast.LENGTH_LONG).show();
-
-				System.gc();
 			}
 		});
 	}
@@ -33,4 +40,46 @@ public class RuStoreCoreUtils
 		formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
 		return formatter.format(date);
 	}
+
+	@Keep
+	public static void CopyToClipboard(final Activity activity, String text)
+	{
+		ClipboardManager clipboard = (ClipboardManager)activity.getSystemService(Context.CLIPBOARD_SERVICE);
+		ClipData clip = ClipData.newPlainText("Copied Text", text);
+		clipboard.setPrimaryClip(clip);
+	}
+
+	@Keep
+	public static RuStoreImage DownloadImage(String imageUrl) throws IOException
+	{
+		RuStoreImage image = new RuStoreImage();
+
+		try {
+			InputStream inputStream = new URL(imageUrl).openStream();
+			Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+		
+			image.width = bitmap.getWidth();
+			image.height = bitmap.getHeight();
+
+			int[] pixels = new int[image.width * image.height];
+			bitmap.getPixels(pixels, 0, image.width, 0, 0, image.width, image.height);
+
+			image.bgra = new byte[4 * image.width * image.height];
+			for (int i = 0; i < pixels.length; i++) {
+				image.bgra[i * 4] = (byte)(pixels[i] & 0xFF);
+				image.bgra[i * 4 + 1] = (byte)((pixels[i] >> 8) & 0xFF);
+				image.bgra[i * 4 + 2] = (byte)((pixels[i] >> 16) & 0xFF);
+				image.bgra[i * 4 + 3] = (byte)((pixels[i] >> 24) & 0xFF);
+			}
+
+			image.isComplete = true;
+		} catch (IOException e) {
+			image.width = 0;
+			image.height = 0;
+			image.bgra = new byte[0];
+			image.isComplete = false;
+		}
+
+        return image;
+    }
 }

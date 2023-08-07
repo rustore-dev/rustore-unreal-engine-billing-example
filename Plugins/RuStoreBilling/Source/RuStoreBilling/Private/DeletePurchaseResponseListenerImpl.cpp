@@ -16,13 +16,10 @@ extern "C"
         castobj->OnFailure(obj);
     }
 
-    JNIEXPORT void JNICALL Java_com_Plugins_RuStoreBilling_DeletePurchaseResponseListenerWrapper_NativeOnSuccess(JNIEnv*, jobject, jlong pointer, jobject result)
+    JNIEXPORT void JNICALL Java_com_Plugins_RuStoreBilling_DeletePurchaseResponseListenerWrapper_NativeOnSuccess(JNIEnv*, jobject, jlong pointer)
     {
-        auto obj = new AndroidJavaObject(result);
-        obj->UpdateToGlobalRef();
-
         auto castobj = reinterpret_cast<DeletePurchaseResponseListenerImpl*>(pointer);
-        castobj->OnSuccess(obj);
+        castobj->OnSuccess();
     }
 }
 #endif

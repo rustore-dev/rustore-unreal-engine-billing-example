@@ -3,8 +3,9 @@
 package com.Plugins.RuStoreBilling;
 
 import com.Plugins.RuStoreCore.IRuStoreListener;
+import java.util.List;
 import ru.rustore.unitysdk.billingclient.callbacks.ProductsResponseListener;
-import ru.rustore.sdk.billingclient.model.product.ProductsResponse;
+import ru.rustore.sdk.billingclient.model.product.Product;
 
 public class ProductsResponseListenerWrapper implements IRuStoreListener, ProductsResponseListener
 {
@@ -12,7 +13,7 @@ public class ProductsResponseListenerWrapper implements IRuStoreListener, Produc
     private long cppPointer = 0;
 
     private native void NativeOnFailure(long pointer, Throwable throwable);
-    private native void NativeOnSuccess(long pointer, ProductsResponse response);
+    private native void NativeOnSuccess(long pointer, List<Product> response);
 
     public ProductsResponseListenerWrapper(long cppPointer) {
         this.cppPointer = cppPointer;
@@ -28,7 +29,7 @@ public class ProductsResponseListenerWrapper implements IRuStoreListener, Produc
     }
 
     @Override
-    public void OnSuccess(ProductsResponse response) {
+    public void OnSuccess(List<Product> response) {
         synchronized (mutex) {
             if (cppPointer != 0) {
                 NativeOnSuccess(cppPointer, response);
