@@ -86,10 +86,6 @@ jobject AndroidJavaObject::GetJObject()
 AndroidJavaObject::~AndroidJavaObject()
 {
 #if PLATFORM_ANDROID
-    FString tag = "rustore";
-    FString msg = className;
-    __android_log_write(ANDROID_LOG_INFO, TCHAR_TO_UTF8(*tag), TCHAR_TO_UTF8(*msg));
-    
     if (!env->IsSameObject(javaObject, nullptr))
     {
         if (bIsGlobalRef) env->DeleteGlobalRef(javaObject);
@@ -184,13 +180,26 @@ int AndroidJavaObject::GetLong(FString fieldName)
     return result;
 }
 
+bool AndroidJavaObject::GetBool(FString fieldName)
+{
+    bool result = 0;
+#if PLATFORM_ANDROID
+    jfieldID fieldId = env->GetFieldID(javaClass, TCHAR_TO_ANSI(*fieldName), TCHAR_TO_ANSI(*JavaMethodSignature::getName(result)));
+    result = (long)env->GetBooleanField(javaObject, fieldId);
+#endif
+    return result;
+}
+
 FString AndroidJavaObject::GetFString(FString fieldName)
 {
     FString result = "";
 #if PLATFORM_ANDROID
     jfieldID fieldId = env->GetFieldID(javaClass, TCHAR_TO_ANSI(*fieldName), TCHAR_TO_ANSI(*JavaMethodSignature::getName(result)));
     jstring strResult = (jstring)env->GetObjectField(javaObject, fieldId);
-    result = FJavaHelper::FStringFromParam(env, strResult);
+    if (strResult != nullptr)
+    {
+        result = FJavaHelper::FStringFromParam(env, strResult);
+    }
 #endif
     return result;
 }
@@ -201,6 +210,28 @@ int AndroidJavaObject::GetEnum(FString fieldName, FString signature)
 #if PLATFORM_ANDROID
     jfieldID fieldId = env->GetFieldID(javaClass, TCHAR_TO_ANSI(*fieldName), TCHAR_TO_ANSI(*JavaMethodSignature::getName(result)));
     result = (int)env->GetIntField(javaObject, fieldId);
+#endif
+    return result;
+}
+
+TArray<uint8>* AndroidJavaObject::GetByteArray(FString fieldName)
+{
+    TArray<uint8>* result = new TArray<uint8>();
+#if PLATFORM_ANDROID
+    FString signature = JavaMethodSignature::getName(result);
+    jfieldID fieldId = env->GetFieldID(javaClass, TCHAR_TO_ANSI(*fieldName), TCHAR_TO_ANSI(*signature));
+    
+#ifdef RuStoreDebug
+    _LogInfo(RuStoreDebug, signature);
+#endif
+    
+    jbyteArray jArray = (jbyteArray)env->GetObjectField(javaObject, fieldId);
+    int length = env->GetArrayLength(jArray);
+    jbyte* data = env->GetByteArrayElements(jArray, nullptr);
+    for (int i = 0; i < length; i++) {
+        result->Add(static_cast<uint8>(data[i]));
+    }
+    env->ReleaseByteArrayElements(jArray, data, 0);
 #endif
     return result;
 }

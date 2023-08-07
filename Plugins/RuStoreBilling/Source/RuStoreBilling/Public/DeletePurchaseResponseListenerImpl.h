@@ -2,30 +2,20 @@
 
 #pragma once
 
-#include "ResponseListener.h"
-#include "FURuStoreDeletePurchaseResponse.h"
-#include "DataConverter.h"
+#include "FURuStoreError.h"
+#include "SimpleResponseListener.h"
 
 namespace RuStoreSDK
 {
-    class RUSTOREBILLING_API DeletePurchaseResponseListenerImpl : public ResponseListener<FURuStoreDeletePurchaseResponse>
+    class RUSTOREBILLING_API DeletePurchaseResponseListenerImpl : public SimpleResponseListener
     {
     public:
         DeletePurchaseResponseListenerImpl(
-            TFunction<void(long, TSharedPtr<FURuStoreDeletePurchaseResponse, ESPMode::ThreadSafe>)> onSuccess,
+            TFunction<void(long)> onSuccess,
             TFunction<void(long, TSharedPtr<FURuStoreError, ESPMode::ThreadSafe>)> onFailure,
             TFunction<void(RuStoreListener*)> onFinish
-        ) : ResponseListener<FURuStoreDeletePurchaseResponse>("com/Plugins/RuStoreBilling/DeletePurchaseResponseListenerWrapper", "ru/rustore/unitysdk/billingclient/callbacks/DeletePurchaseListener", onSuccess, onFailure, onFinish)
+        ) : SimpleResponseListener("com/Plugins/RuStoreBilling/DeletePurchaseResponseListenerWrapper", "ru/rustore/unitysdk/billingclient/callbacks/DeletePurchaseListener", onSuccess, onFailure, onFinish)
         {
-        }
-
-    protected:
-        FURuStoreDeletePurchaseResponse* ConvertResponse(AndroidJavaObject* responseObject) override
-        {
-            auto response = new FURuStoreDeletePurchaseResponse();
-            DataConverter::InitResponseWithCode(responseObject, response);
-
-            return response;
         }
     };
 }

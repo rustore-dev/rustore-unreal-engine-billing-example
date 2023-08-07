@@ -50,8 +50,11 @@
       
       dependencies {
         // RuStore Billing
-        implementation ("ru.rustore.sdk:billingclient:1.1.1$billing_type")
+        implementation ("ru.rustore.sdk:billingclient:2.1.2$billing_type")
         implementation fileTree(include: ["RuStoreUnityBillingClient${billing_type}.aar"], dir: 'src/main/libs')
+        
+        implementation ("androidx.lifecycle:lifecycle-viewmodel:2.5.1")
+        implementation ("androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1")
       }
     </insert>
   </buildGradleAdditions>
@@ -73,7 +76,5 @@
         RuStoreUnityBillingClient.onNewIntent(newIntent);
     </insert>
   </gameActivityOnNewIntentAdditions>
-  
-  
   
 </root>

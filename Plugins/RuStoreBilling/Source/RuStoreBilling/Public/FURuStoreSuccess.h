@@ -4,26 +4,21 @@
 
 #include "CoreMinimal.h"
 #include "FURuStorePaymentResult.h"
-#include "FURuStorePurchaseResult.generated.h"
+#include "FURuStoreSuccess.generated.h"
 
 USTRUCT(BlueprintType)
-struct RUSTOREBILLING_API FURuStorePurchaseResult : public FURuStorePaymentResult
+struct RUSTOREBILLING_API FURuStoreSuccess : public FURuStorePaymentResult
 {
     GENERATED_USTRUCT_BODY()
 
-    FURuStorePurchaseResult()
+    FURuStoreSuccess()
     {
-        finishCode = EURuStorePaymentFinishCode::RESULT_UNKNOWN;
         orderId = "";
         purchaseId = "";
         productId = "";
+        invoiceId = "";
         subscriptionToken = "";
     }
-
-    virtual ~FURuStorePurchaseResult() {}
-
-    UPROPERTY(BlueprintReadOnly)
-    EURuStorePaymentFinishCode finishCode;
 
     UPROPERTY(BlueprintReadOnly)
     FString orderId;
@@ -35,7 +30,10 @@ struct RUSTOREBILLING_API FURuStorePurchaseResult : public FURuStorePaymentResul
     FString productId;
 
     UPROPERTY(BlueprintReadOnly)
+    FString invoiceId;
+
+    UPROPERTY(BlueprintReadOnly)
     FString subscriptionToken;
 
-    virtual FString GetTypeName() override { return "FURuStorePurchaseResult"; }
+    virtual FString GetTypeName() override { return "FURuStoreSuccess"; }
 };

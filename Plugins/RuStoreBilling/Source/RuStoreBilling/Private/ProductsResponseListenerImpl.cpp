@@ -8,25 +8,17 @@ FURuStoreProductsResponse* ProductsResponseListenerImpl::ConvertResponse(Android
 {
     auto response = new FURuStoreProductsResponse();
 
-    DataConverter::InitResponseWithCode(responseObject, response);
-
-    auto products = responseObject->GetAJObject("products", "Ljava/util/List;");
-    if (products != nullptr)
+    auto size = responseObject->CallInt("size");
+    for (int i = 0; i < size; i++)
     {
-        auto size = products->CallInt("size");
-        for (int i = 0; i < size; i++)
+        auto product = responseObject->CallAJObject("get", i);
+        if (product != nullptr)
         {
-            auto product = products->CallAJObject("get", i);
-            if (product != nullptr)
-            {
-                auto item = DataConverter::ConvertProduct(product);
-                response->products.Add(*item);
+            auto item = DataConverter::ConvertProduct(product);
+            response->products.Add(*item);
 
-                delete product;
-            }
+            delete product;
         }
-
-        delete products;
     }
 
     return response;

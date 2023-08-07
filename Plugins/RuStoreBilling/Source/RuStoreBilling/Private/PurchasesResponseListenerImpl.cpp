@@ -8,25 +8,17 @@ FURuStorePurchasesResponse* PurchasesResponseListenerImpl::ConvertResponse(Andro
 {
     auto response = new FURuStorePurchasesResponse();
 
-    DataConverter::InitResponseWithCode(responseObject, response);
-
-    auto purchases = responseObject->GetAJObject("purchases", "Ljava/util/List;");
-    if (purchases != nullptr)
+    auto size = responseObject->CallInt("size");
+    for (int i = 0; i < size; i++)
     {
-        auto size = purchases->CallInt("size");
-        for (int i = 0; i < size; i++)
+        auto purchase = responseObject->CallAJObject("get", i);
+        if (purchase != nullptr)
         {
-            auto purchase = purchases->CallAJObject("get", i);
-            if (purchase != nullptr)
-            {
-                auto item = DataConverter::ConvertPurchase(purchase);
-                response->purchases.Add(*item);
+            auto item = DataConverter::ConvertPurchase(purchase);
+            response->purchases.Add(*item);
 
-                delete purchase;
-            }
+            delete purchase;
         }
-
-        delete purchases;
     }
 
     return response;
