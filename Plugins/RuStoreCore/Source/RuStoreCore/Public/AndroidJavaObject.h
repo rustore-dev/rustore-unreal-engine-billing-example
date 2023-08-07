@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "JavaMethodSignature.h"
 #include "JavaTypeConverter.h"
+#include "AndroidJavaLog.h"
 
 namespace RuStoreSDK
 {
@@ -51,8 +52,10 @@ namespace RuStoreSDK
         T* Get(FString fieldName);
         int GetInt(FString fieldName);
         int GetLong(FString fieldName);
+        bool GetBool(FString fieldName);
         FString GetFString(FString fieldName);
         int GetEnum(FString fieldName, FString signature);
+        TArray<uint8>* GetByteArray(FString fieldName);
         AndroidJavaObject* GetAJObject(FString fieldName, FString signature = "");
         AndroidJavaObject* GetAJObjectArrayElement(int i);
 
