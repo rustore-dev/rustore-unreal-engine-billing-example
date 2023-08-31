@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root xmlns:android="http://schemas.android.com/apk/res/android">
+
+  <resourceCopies>
+	  <copyFile src="$S(PluginDir)/rustore_billing_values.xml" dst="$S(BuildDir)/res/values/rustore_billing_values.xml" />
+  </resourceCopies>
+
+  <androidManifestUpdates>
+    <loopElements tag="activity">
+      <addAttribute tag="$" name="android:exported" value="true" />
+    </loopElements>
+  </androidManifestUpdates>
+  
+</root>

@@ -66,4 +66,10 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "RuStore Core")
 	static void CopyToClipboard(FString text);
+
+	UFUNCTION(BlueprintCallable, Category = "RuStore Core")
+	static void GetFromClipboard(FString& text);
+
+	UFUNCTION(BlueprintCallable, Category = "RuStore Core")
+	static void GetStringResources(FString name, FString& value);
 };
