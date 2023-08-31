@@ -6,37 +6,41 @@
   </prebuildCopies>
 
   <resourceCopies>
-    <copyDir src="$S(PluginDir)/ThirdParty/Android" dst="$S(BuildDir)/libs" />
+	  <copyDir src="$S(PluginDir)/ThirdParty/Android/libs" dst="$S(BuildDir)/libs" />
   </resourceCopies>
 
   <androidManifestUpdates>
+    <!-- For each activity -->
     <loopElements tag="activity">
       <!-- Find UE GameActivity -->
-      <log text="Find activity" />
       <setStringFromAttribute result="activityName" tag="$" name="android:name" />
-      <setBoolIsEqual result="bUE4GameActivity" arg1="$S(activityName)" arg2="com.epicgames.ue4.GameActivity" />
+      <setBoolIsEqual result="bIsUE4GameActivity" arg1="$S(activityName)" arg2="com.epicgames.ue4.GameActivity" />
+      <setBoolIsEqual result="bIsUE5GameActivity" arg1="$S(activityName)" arg2="com.epicgames.unreal.GameActivity" />
+      <setBoolOr result="bIsGameActivity" arg1="$B(bIsUE4GameActivity)" arg2="$B(bIsUE5GameActivity)" />
+      
 	    <!-- Add android:exported attribute for UE4 GameActivity -->
-	    <if condition="bUE4GameActivity">
+	    <if condition="bIsUE4GameActivity">
 		    <true>
 			    <addAttribute tag="$" name="android:exported" value="true"/>
 		    </true>
 	    </if>
-      <setBoolIsEqual result="bUE5GameActivity" arg1="$S(activityName)" arg2="com.epicgames.unreal.GameActivity" />
-      <setBoolOr result="bGameActivity" arg1="$B(bUE4GameActivity)" arg2="$B(bUE5GameActivity)" />
-      <if condition="bGameActivity">
+
+      <!-- Add intent-filter to GameActivity -->
+      <if condition="bIsGameActivity">
         <true>
-          <!-- Add intent-filter to GameActivity -->
           <addElements tag="$">
             <intent-filter>
               <action android:name="android.intent.action.VIEW" />
               <category android:name="android.intent.category.DEFAULT" />
               <category android:name="android.intent.category.BROWSABLE" />
               <!-- Set your appscheme -->
-              <data android:scheme="yourappscheme" />
+              <data android:scheme="@string/rustore_app_scheme" />
             </intent-filter>
           </addElements>
         </true>
       </if>
+      
+    <!-- For each activity -->
     </loopElements>
   </androidManifestUpdates>
 
@@ -50,7 +54,7 @@
       
       dependencies {
         // RuStore Billing
-        implementation ("ru.rustore.sdk:billingclient:2.1.2$billing_type")
+        implementation ("ru.rustore.sdk:billingclient:2.2.0$billing_type")
         implementation fileTree(include: ["RuStoreUnityBillingClient${billing_type}.aar"], dir: 'src/main/libs')
         
         implementation ("androidx.lifecycle:lifecycle-viewmodel:2.5.1")

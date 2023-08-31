@@ -18,9 +18,6 @@ private:
     void Start(const FString url, UTextureDownloader* object);
     UTexture2D* DownloadImageAsTexture2D(FString url);
 
-    UPROPERTY(EditAnywhere)
-    UTexture2D* cacheTexture;
-
 public:
     UPROPERTY(BlueprintAssignable)
     FCompleteTextureDownloadOutputPin Complete;

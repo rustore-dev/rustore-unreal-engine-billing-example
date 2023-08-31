@@ -122,3 +122,19 @@ void URuStoreCore::CopyToClipboard(FString text)
 
     javaClass->CallStaticVoid("CopyToClipboard", &activity.Get(), text);
 }
+
+void URuStoreCore::GetFromClipboard(FString& text)
+{
+    auto javaClass = MakeShared<AndroidJavaClass>("com/Plugins/RuStoreCore/RuStoreCoreUtils");
+    auto activity = MakeShared<JavaActivity>();
+
+    text = javaClass->CallStaticFString("GetFromClipboard", &activity.Get());
+}
+
+void URuStoreCore::GetStringResources(FString name, FString& value)
+{
+    auto javaClass = MakeShared<AndroidJavaClass>("com/Plugins/RuStoreCore/RuStoreCoreUtils");
+    auto application = MakeShared<JavaApplication>();
+
+    value = javaClass->CallStaticFString("GetStringResources", &application.Get(), name);
+}

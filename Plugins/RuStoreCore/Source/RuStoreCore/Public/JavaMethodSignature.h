@@ -55,6 +55,12 @@ namespace RuStoreSDK
         }
 
         template <typename... Args>
+        static FString MakeBool(Args... args)
+        {
+            return Constuct(getName(args)...) + "Z";
+        }
+
+        template <typename... Args>
         static FString MakeByte(Args... args)
         {
             return Constuct(getName(args)...) + "B";

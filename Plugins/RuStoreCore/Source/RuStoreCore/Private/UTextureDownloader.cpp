@@ -9,7 +9,6 @@ using namespace RuStoreSDK;
 
 UTextureDownloader::UTextureDownloader(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
-    cacheTexture = nullptr;
 }
 
 UTextureDownloader* UTextureDownloader::DownloadImage(FString url)
@@ -23,13 +22,13 @@ void UTextureDownloader::Start(const FString url, UTextureDownloader* object)
 {
     AsyncTask(ENamedThreads::AnyThread, [url, object]()
         {
-            object->cacheTexture = object->DownloadImageAsTexture2D(url);
+            auto texture2D = object->DownloadImageAsTexture2D(url);
 
-            AsyncTask(ENamedThreads::GameThread, [object]()
+            AsyncTask(ENamedThreads::GameThread, [object, texture2D]()
                 {
-                    if (object->cacheTexture != nullptr)
+                    if (texture2D != nullptr)
                     {
-                        object->Complete.Broadcast(object->cacheTexture);
+                        object->Complete.Broadcast(texture2D);
                     }
                     else
                     {
