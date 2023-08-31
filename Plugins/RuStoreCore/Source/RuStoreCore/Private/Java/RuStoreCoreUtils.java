@@ -3,6 +3,7 @@
 package com.Plugins.RuStoreCore;
 
 import android.app.Activity;
+import android.app.Application;
 import android.content.ClipboardManager;
 import android.content.ClipData;
 import android.content.Context;
@@ -47,6 +48,27 @@ public class RuStoreCoreUtils
 		ClipboardManager clipboard = (ClipboardManager)activity.getSystemService(Context.CLIPBOARD_SERVICE);
 		ClipData clip = ClipData.newPlainText("Copied Text", text);
 		clipboard.setPrimaryClip(clip);
+	}
+
+	@Keep
+	public static String GetFromClipboard(final Activity activity)
+	{
+		ClipboardManager clipboard = (ClipboardManager)activity.getSystemService(Context.CLIPBOARD_SERVICE);
+		ClipData clip = clipboard.getPrimaryClip();
+
+        if (clip == null) return null;
+		CharSequence text = clip.getItemAt(0).getText();
+		if (text == null) return null;
+
+		return text.toString();
+	}
+
+	@Keep
+	public static String GetStringResources(final Application application, String name)
+	{
+		int id = application.getResources().getIdentifier(name, "string", application.getPackageName());
+
+		return application.getString(id);
 	}
 
 	@Keep
