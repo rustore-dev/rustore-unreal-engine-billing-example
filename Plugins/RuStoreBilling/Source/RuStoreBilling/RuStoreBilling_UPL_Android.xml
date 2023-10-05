@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root xmlns:android="http://schemas.android.com/apk/res/android">
+
+  <prebuildCopies>
+    <copyDir src="$S(PluginDir)/Private/Java" dst="$S(BuildDir)/src/com/Plugins/RuStoreBilling" />
+  </prebuildCopies>
+
+  <resourceCopies>
+	  <copyDir src="$S(PluginDir)/ThirdParty/Android/libs" dst="$S(BuildDir)/libs" />
+  </resourceCopies>
+
+  <androidManifestUpdates>
+    <!-- For each activity -->
+    <loopElements tag="activity">
+      <!-- Find UE GameActivity -->
+      <setStringFromAttribute result="activityName" tag="$" name="android:name" />
+      <setBoolIsEqual result="bIsUE4GameActivity" arg1="$S(activityName)" arg2="com.epicgames.ue4.GameActivity" />
+      <setBoolIsEqual result="bIsUE5GameActivity" arg1="$S(activityName)" arg2="com.epicgames.unreal.GameActivity" />
+      <setBoolOr result="bIsGameActivity" arg1="$B(bIsUE4GameActivity)" arg2="$B(bIsUE5GameActivity)" />
+      
+	    <!-- Add android:exported attribute for UE4 GameActivity -->
+	    <if condition="bIsUE4GameActivity">
+		    <true>
+			    <addAttribute tag="$" name="android:exported" value="true"/>
+		    </true>
+	    </if>
+
+      <!-- Add intent-filter to GameActivity -->
+      <if condition="bIsGameActivity">
+        <true>
+          <addElements tag="$">
+            <intent-filter>
+              <action android:name="android.intent.action.VIEW" />
+              <category android:name="android.intent.category.DEFAULT" />
+              <category android:name="android.intent.category.BROWSABLE" />
+              <!-- Set your appscheme -->
+              <data android:scheme="@string/rustore_app_scheme" />
+            </intent-filter>
+          </addElements>
+        </true>
+      </if>
+      
+    <!-- For each activity -->
+    </loopElements>
+  </androidManifestUpdates>
+
+  <buildGradleAdditions>
+    <insert>
+      ext.billing_type = ''
+      
+      if (project.hasProperty("rustore_sdk_type")) {
+        billing_type = rustore_sdk_type
+      }
+      
+      dependencies {
+        // RuStore Billing
+        implementation ("ru.rustore.sdk:billingclient:2.2.0$billing_type")
+        implementation fileTree(include: ["RuStoreUnityBillingClient${billing_type}.aar"], dir: 'src/main/libs')
+        
+        implementation ("androidx.lifecycle:lifecycle-viewmodel:2.5.1")
+        implementation ("androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1")
+      }
+    </insert>
+  </buildGradleAdditions>
+
+  <gameActivityImportAdditions>
+    <insert>import ru.rustore.unitysdk.billingclient.RuStoreUnityBillingClient;</insert>
+  </gameActivityImportAdditions>
+
+  <gameActivityOnCreateAdditions>
+    <insert>
+        if (savedInstanceState == null)
+        {
+            RuStoreUnityBillingClient.onNewIntent(getIntent());
+        }</insert>
+  </gameActivityOnCreateAdditions>
+
+  <gameActivityOnNewIntentAdditions>
+    <insert>
+        RuStoreUnityBillingClient.onNewIntent(newIntent);
+    </insert>
+  </gameActivityOnNewIntentAdditions>
+  
+</root>
