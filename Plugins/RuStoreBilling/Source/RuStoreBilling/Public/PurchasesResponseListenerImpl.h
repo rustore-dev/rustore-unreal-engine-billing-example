@@ -15,7 +15,7 @@ namespace RuStoreSDK
             TFunction<void(long, TSharedPtr<FURuStorePurchasesResponse, ESPMode::ThreadSafe>)> onSuccess,
             TFunction<void(long, TSharedPtr<FURuStoreError, ESPMode::ThreadSafe>)> onFailure,
             TFunction<void(RuStoreListener*)> onFinish
-        ) : ResponseListener<FURuStorePurchasesResponse>("com/Plugins/RuStoreBilling/PurchasesResponseListenerWrapper", "ru/rustore/unitysdk/billingclient/callbacks/PurchasesResponseListener", onSuccess, onFailure, onFinish)
+        ) : ResponseListener<FURuStorePurchasesResponse>("ru/rustore/unitysdk/billingclient/wrappers/PurchasesResponseListenerWrapper", "ru/rustore/unitysdk/billingclient/callbacks/PurchasesResponseListener", onSuccess, onFailure, onFinish)
         {
         }
 
