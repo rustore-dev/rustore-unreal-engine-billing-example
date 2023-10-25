@@ -3,7 +3,7 @@
 #include "URuStoreCore.h"
 #include "AndroidJavaClass.h"
 
-const FString URuStoreCore::PluginVersion = "0.2";
+const FString URuStoreCore::PluginVersion = "0.4";
 URuStoreCore* URuStoreCore::_instance = nullptr;
 bool URuStoreCore::_bIsInstanceInitialized = false;
 

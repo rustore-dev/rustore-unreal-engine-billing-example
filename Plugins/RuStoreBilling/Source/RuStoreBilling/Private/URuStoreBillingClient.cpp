@@ -16,7 +16,7 @@
 
 using namespace RuStoreSDK;
 
-const FString URuStoreBillingClient::PluginVersion = "0.2";
+const FString URuStoreBillingClient::PluginVersion = "0.4";
 URuStoreBillingClient* URuStoreBillingClient::_instance = nullptr;
 bool URuStoreBillingClient::_bIsInstanceInitialized = false;
 
