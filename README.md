@@ -20,7 +20,7 @@
 
 2. В настройках проекта (Edit → Project Settings → Platforms → Android) укажите имя пакета “Android Package Name” и параметры подписи “Distribution Signing” вашего приложения в RuStore. Подробная информация о публикации приложений в RuStore доступна на странице [help](https://help.rustore.ru/rustore/for_developers/publishing_and_verifying_apps).
 
-3. Настройте перечень продуктов в списке “ProductIds” в виджете “BillingClientWidgetBlueprint”.
+3. Настройте перечень продуктов в списке “ProductIds” в виджете “UI / BillingClientWidgetBlueprint”.
 
 
 ### Техническая поддержка
