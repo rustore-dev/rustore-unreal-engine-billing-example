@@ -16,7 +16,7 @@ struct FURuStoreProduct
     FURuStoreProduct()
     {
         productId = "";
-        productType = EURuStoreProductType::CONSUMABLE;
+        productType = EURuStoreProductType::NON_CONSUMABLE;
         productStatus = EURuStoreProductStatus::INACTIVE;
         priceLabel = "";
         price = 0;
