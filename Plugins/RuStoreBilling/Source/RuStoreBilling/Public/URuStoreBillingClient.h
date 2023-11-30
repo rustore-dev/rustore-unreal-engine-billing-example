@@ -6,6 +6,7 @@
 #include "UObject/Object.h"
 
 #include "AndroidJavaObject.h"
+#include "EURuStoreTheme.h"
 #include "FURuStoreFeatureAvailabilityResult.h"
 #include "FURuStoreProductsResponse.h"
 #include "FURuStorePurchase.h"
@@ -82,7 +83,12 @@ public:
     long ConfirmPurchase(FString purchaseId, TFunction<void(long)> onSuccess, TFunction<void(long, TSharedPtr<FURuStoreError, ESPMode::ThreadSafe>)> onFailure);
     long DeletePurchase(FString purchaseId, TFunction<void(long)> onSuccess, TFunction<void(long, TSharedPtr<FURuStoreError, ESPMode::ThreadSafe>)> onFailure);
     long GetPurchaseInfo(FString purchaseId, TFunction<void(long, TSharedPtr<FURuStorePurchase, ESPMode::ThreadSafe>)> onSuccess, TFunction<void(long, TSharedPtr<FURuStoreError, ESPMode::ThreadSafe>)> onFailure);
-
+    
+    UFUNCTION(BlueprintCallable, Category = "RuStore Billing Client")
+    void SetTheme(EURuStoreTheme theme);
+    
+    UFUNCTION(BlueprintCallable, Category = "RuStore Billing Client")
+    EURuStoreTheme GetTheme();
 
     // 
     UFUNCTION(BlueprintCallable, Category = "RuStore Billing Client")

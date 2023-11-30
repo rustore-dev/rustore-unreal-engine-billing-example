@@ -196,6 +196,22 @@ long URuStoreBillingClient::GetPurchaseInfo(FString purchaseId, TFunction<void(l
     return listener->GetId();
 }
 
+void URuStoreBillingClient::SetTheme(EURuStoreTheme theme)
+{
+    if (!URuStoreCore::IsPlatformSupported()) return;
+    if (!bIsInitialized) return;
+
+    _clientWrapper->CallVoid("setThemeCode", (int)theme);
+}
+
+EURuStoreTheme URuStoreBillingClient::GetTheme()
+{
+    if (!URuStoreCore::IsPlatformSupported()) return EURuStoreTheme::LIGHT;
+    if (!bIsInitialized) return EURuStoreTheme::LIGHT;
+
+    return (EURuStoreTheme)(_clientWrapper->CallInt("getThemeCode"));
+}
+
 
 void URuStoreBillingClient::CheckPurchasesAvailability(int64& requestId)
 {
