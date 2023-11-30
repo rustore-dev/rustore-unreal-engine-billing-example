@@ -1,6 +1,6 @@
 ## RuStore Unreal Engine плагин для приема платежей через сторонние приложения
 
-### [Документация разработчика](https://help.rustore.ru/rustore/for_developers/developer-documentation/sdk_payments/unreal)
+### [🔗 Документация разработчика](https://help.rustore.ru/rustore/for_developers/developer-documentation/sdk_payments/unreal)
 
 Плагин RuStoreBilling помогает интегрировать в ваш проект механизм оплаты через сторонние приложения (например SberPay или СБП).
 
