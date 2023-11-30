@@ -51,7 +51,7 @@ namespace RuStoreSDK
 		template<typename T>
 		T* Get(FString fieldName);
 		int GetInt(FString fieldName);
-		int GetLong(FString fieldName);
+		long GetLong(FString fieldName);
 		bool GetBool(FString fieldName);
 		FString GetFString(FString fieldName);
 		int GetEnum(FString fieldName, FString signature);
