@@ -6,6 +6,7 @@
 #include "UObject/Object.h"
 
 #include "AndroidJavaObject.h"
+#include "EURuStoreTheme.h"
 #include "FURuStoreFeatureAvailabilityResult.h"
 #include "FURuStoreProductsResponse.h"
 #include "FURuStorePurchase.h"
@@ -73,14 +74,21 @@ public:
 
     void ConditionalBeginDestroy();
 
+    URuStorePaymentResultClass* ConvertPaymentResult(TSharedPtr<FURuStorePaymentResult, ESPMode::ThreadSafe> value);
+
     long CheckPurchasesAvailability(TFunction<void(long, TSharedPtr<FURuStoreFeatureAvailabilityResult, ESPMode::ThreadSafe>)> onSuccess, TFunction<void(long, TSharedPtr<FURuStoreError, ESPMode::ThreadSafe>)> onFailure);
-    long GetProducts(TArray<FString> productIds, TFunction<void(long, TSharedPtr<FURuStoreProductsResponse, ESPMode::ThreadSafe>)> onSuccess, TFunction<void(long, TSharedPtr<FURuStoreError, ESPMode::ThreadSafe>)> onFailure);
+    long GetProducts(TArray<FString>& productIds, TFunction<void(long, TSharedPtr<FURuStoreProductsResponse, ESPMode::ThreadSafe>)> onSuccess, TFunction<void(long, TSharedPtr<FURuStoreError, ESPMode::ThreadSafe>)> onFailure);
     long GetPurchases(TFunction<void(long, TSharedPtr<FURuStorePurchasesResponse, ESPMode::ThreadSafe>)> onSuccess, TFunction<void(long, TSharedPtr<FURuStoreError, ESPMode::ThreadSafe>)> onFailure);
     long PurchaseProduct(FString productId, FString orderId, int quantity, FString developerPayload, TFunction<void(long, TSharedPtr<FURuStorePaymentResult, ESPMode::ThreadSafe>)> onSuccess, TFunction<void(long, TSharedPtr<FURuStoreError, ESPMode::ThreadSafe>)> onFailure);
     long ConfirmPurchase(FString purchaseId, TFunction<void(long)> onSuccess, TFunction<void(long, TSharedPtr<FURuStoreError, ESPMode::ThreadSafe>)> onFailure);
     long DeletePurchase(FString purchaseId, TFunction<void(long)> onSuccess, TFunction<void(long, TSharedPtr<FURuStoreError, ESPMode::ThreadSafe>)> onFailure);
     long GetPurchaseInfo(FString purchaseId, TFunction<void(long, TSharedPtr<FURuStorePurchase, ESPMode::ThreadSafe>)> onSuccess, TFunction<void(long, TSharedPtr<FURuStoreError, ESPMode::ThreadSafe>)> onFailure);
-
+    
+    UFUNCTION(BlueprintCallable, Category = "RuStore Billing Client")
+    void SetTheme(EURuStoreTheme theme);
+    
+    UFUNCTION(BlueprintCallable, Category = "RuStore Billing Client")
+    EURuStoreTheme GetTheme();
 
     // 
     UFUNCTION(BlueprintCallable, Category = "RuStore Billing Client")

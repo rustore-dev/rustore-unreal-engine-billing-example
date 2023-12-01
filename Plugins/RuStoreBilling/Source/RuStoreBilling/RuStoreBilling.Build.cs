@@ -9,17 +9,22 @@ public class RuStoreBilling : ModuleRules
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 
+		string publicPath = Path.Combine(ModuleDirectory, "Public");
+		string privatePath = Path.Combine(ModuleDirectory, "Private");
+
 		PublicIncludePaths.AddRange(
 			new string[]
 			{
-				Path.Combine(ModuleDirectory, "Public"),
+				publicPath,
+				Path.Combine(publicPath, "AsyncNodes"),
 			}
 		);
 
 		PrivateIncludePaths.AddRange(
 			new string[]
 			{
-				Path.Combine(ModuleDirectory, "Private"),
+				privatePath,
+				Path.Combine(privatePath, "AsyncNodes"),
 			}
 		);
 

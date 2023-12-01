@@ -12,7 +12,7 @@ FURuStorePurchase* PurchaseInfoResponseListenerImpl::ConvertResponse(AndroidJava
 #if PLATFORM_ANDROID
 extern "C"
 {
-    JNIEXPORT void JNICALL Java_com_Plugins_RuStoreBilling_PurchaseInfoResponseListenerWrapper_NativeOnFailure(JNIEnv*, jobject, jlong pointer, jthrowable throwable)
+    JNIEXPORT void JNICALL Java_ru_rustore_unitysdk_billingclient_wrappers_PurchaseInfoResponseListenerWrapper_NativeOnFailure(JNIEnv*, jobject, jlong pointer, jthrowable throwable)
     {
         auto obj = new AndroidJavaObject(throwable);
         obj->UpdateToGlobalRef();
@@ -21,7 +21,7 @@ extern "C"
         castobj->OnFailure(obj);
     }
 
-    JNIEXPORT void JNICALL Java_com_Plugins_RuStoreBilling_PurchaseInfoResponseListenerWrapper_NativeOnSuccess(JNIEnv*, jobject, jlong pointer, jobject result)
+    JNIEXPORT void JNICALL Java_ru_rustore_unitysdk_billingclient_wrappers_PurchaseInfoResponseListenerWrapper_NativeOnSuccess(JNIEnv*, jobject, jlong pointer, jobject result)
     {
         auto obj = new AndroidJavaObject(result);
         obj->UpdateToGlobalRef();
