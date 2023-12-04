@@ -18,10 +18,6 @@
 		{
 			"Name": "RuStoreBuildForAVD",
 			"Enabled": false
-		},
-		{
-			"Name": "RuStoreAccessQA",
-			"Enabled": false
 		}
 	]
 }
