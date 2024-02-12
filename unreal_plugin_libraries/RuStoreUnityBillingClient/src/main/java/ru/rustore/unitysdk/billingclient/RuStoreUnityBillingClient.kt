@@ -4,16 +4,11 @@ import android.content.Intent
 import android.util.Log
 import ru.rustore.sdk.billingclient.RuStoreBillingClient
 import ru.rustore.sdk.billingclient.RuStoreBillingClientFactory
-import ru.rustore.sdk.billingclient.model.product.Product
-import ru.rustore.sdk.billingclient.model.purchase.PaymentResult
-import ru.rustore.sdk.billingclient.model.purchase.Purchase
 import ru.rustore.sdk.billingclient.presentation.BillingClientTheme
 import ru.rustore.sdk.billingclient.provider.logger.ExternalPaymentLogger
 import ru.rustore.sdk.billingclient.utils.pub.checkPurchasesAvailability
 import ru.rustore.sdk.billingclient.utils.resolveForBilling
 import ru.rustore.sdk.core.exception.RuStoreException
-import ru.rustore.sdk.core.feature.model.FeatureAvailabilityResult
-import ru.rustore.sdk.core.tasks.OnCompleteListener
 import ru.rustore.unitysdk.billingclient.callbacks.ConfirmPurchaseListener
 import ru.rustore.unitysdk.billingclient.callbacks.DeletePurchaseListener
 import ru.rustore.unitysdk.billingclient.callbacks.PaymentResultListener
@@ -60,60 +55,47 @@ object RuStoreUnityBillingClient {
 	fun checkPurchasesAvailability(listener: FeatureAvailabilityListener) {
 		PlayerProvider.getCurrentActivity()?.run {
 			RuStoreBillingClient.checkPurchasesAvailability(application)
-				.addOnCompleteListener(object : OnCompleteListener<FeatureAvailabilityResult> {
-					override fun onFailure(throwable: Throwable) {
-						handleError(throwable)
-						listener.OnFailure(throwable)
-					}
-
-					override fun onSuccess(result: FeatureAvailabilityResult) {
-						listener.OnSuccess(result)
-					}
-				})
+				.addOnSuccessListener { result ->
+					listener.OnSuccess(result)
+				}
+				.addOnFailureListener { throwable ->
+					handleError(throwable)
+					listener.OnFailure(throwable)
+				}
 		}
 	}
 
 	fun getProducts(productIds: Array<String>, listener: ProductsResponseListener) {
-		billingClient.products.getProducts(
-				productIds = productIds.asList()
-		).addOnCompleteListener(object : OnCompleteListener<List<Product>> {
-			override fun onFailure(throwable: Throwable) {
+		billingClient.products.getProducts(productIds.asList())
+			.addOnSuccessListener { result ->
+				listener.OnSuccess(result)
+			}
+			.addOnFailureListener { throwable ->
 				handleError(throwable)
 				listener.OnFailure(throwable)
 			}
-
-			override fun onSuccess(result: List<Product>) {
-				listener.OnSuccess(result)
-			}
-		})
 	}
 
 	fun getPurchases(listener: PurchasesResponseListener) {
 		billingClient.purchases.getPurchases()
-				.addOnCompleteListener(object : OnCompleteListener<List<Purchase>> {
-					override fun onFailure(throwable: Throwable) {
-						handleError(throwable)
-						listener.OnFailure(throwable)
-					}
-
-					override fun onSuccess(result: List<Purchase>) {
-						listener.OnSuccess(result)
-					}
-				})
+			.addOnSuccessListener { result ->
+				listener.OnSuccess(result)
+			}
+			.addOnFailureListener { throwable ->
+				handleError(throwable)
+				listener.OnFailure(throwable)
+			}
 	}
 
 	fun getPurchaseInfo(purchaseId: String, listener: PurchaseInfoResponseListener) {
 		billingClient.purchases.getPurchaseInfo(purchaseId)
-			.addOnCompleteListener(object : OnCompleteListener<Purchase> {
-				override fun onFailure(throwable: Throwable) {
-					handleError(throwable)
-					listener.OnFailure(throwable)
-				}
-
-				override fun onSuccess(result: Purchase) {
-					listener.OnSuccess(result)
-				}
-			})
+			.addOnSuccessListener { result ->
+				listener.OnSuccess(result)
+			}
+			.addOnFailureListener { throwable ->
+				handleError(throwable)
+				listener.OnFailure(throwable)
+			}
 	}
 
 	fun purchaseProduct(productId: String, orderId: String?, quantity: Int, developerPayload: String?, listener: PaymentResultListener) {
@@ -122,45 +104,35 @@ object RuStoreUnityBillingClient {
 				orderId = orderId,
 				quantity = quantity,
 				developerPayload = developerPayload
-		).addOnCompleteListener(object : OnCompleteListener<PaymentResult> {
-			override fun onFailure(throwable: Throwable) {
-				listener.OnFailure(throwable)
-			}
-
-			override fun onSuccess(result: PaymentResult) {
+		)
+			.addOnSuccessListener { result ->
 				listener.OnSuccess(result)
 			}
-		})
+			.addOnFailureListener { throwable ->
+				listener.OnFailure(throwable)
+			}
 	}
 
 	fun confirmPurchase(purchaseId: String, listener: ConfirmPurchaseListener) {
-		billingClient.purchases.confirmPurchase(
-				purchaseId = purchaseId
-		).addOnCompleteListener(object : OnCompleteListener<Unit> {
-			override fun onFailure(throwable: Throwable) {
+		billingClient.purchases.confirmPurchase(purchaseId)
+			.addOnSuccessListener {
+				listener.OnSuccess()
+			}
+			.addOnFailureListener { throwable ->
 				handleError(throwable)
 				listener.OnFailure(throwable)
 			}
-
-			override fun onSuccess(result: Unit) {
-				listener.OnSuccess()
-			}
-		})
 	}
 
 	fun deletePurchase(purchaseId: String, listener: DeletePurchaseListener) {
-		billingClient.purchases.deletePurchase(
-				purchaseId = purchaseId
-		).addOnCompleteListener(object : OnCompleteListener<Unit> {
-			override fun onFailure(throwable: Throwable) {
+		billingClient.purchases.deletePurchase(purchaseId)
+			.addOnSuccessListener {
+				listener.OnSuccess()
+			}
+			.addOnFailureListener { throwable ->
 				handleError(throwable)
 				listener.OnFailure(throwable)
 			}
-
-			override fun onSuccess(result: Unit) {
-				listener.OnSuccess()
-			}
-		})
 	}
 
 	fun setThemeCode(themeCode: Int) {
