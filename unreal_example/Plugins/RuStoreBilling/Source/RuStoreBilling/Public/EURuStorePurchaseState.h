@@ -15,5 +15,6 @@ enum class EURuStorePurchaseState : uint8
     CANCELLED UMETA(DisplayName = "CANCELLED"),
     CONSUMED UMETA(DisplayName = "CONSUMED"),
     CLOSED UMETA(DisplayName = "CLOSED"),
+    PAUSED UMETA(DisplayName = "PAUSED"),
     TERMINATED UMETA(DisplayName = "TERMINATED")
 };
