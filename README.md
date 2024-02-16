@@ -18,13 +18,20 @@
 
 ### Сборка примера приложения
 
-1. В файле ресурсов _“Source / RuStoreBillingApp / rustore_billing_values.xml”_ в параметре “rustore_app_id” укажите consoleApplicationId вашего проекта.
+Вы можете ознакомиться с демонстрационным приложением содержащим представление работы всех методов sdk:
+- [README](APP_EXAMPLE.md)
 
-2. В настройках проекта (Edit → Project Settings → Platforms → Android) укажите имя пакета “Android Package Name” и параметры подписи “Distribution Signing” вашего приложения в RuStore. Подробная информация о публикации приложений в RuStore доступна на странице [help](https://help.rustore.ru/rustore/for_developers/publishing_and_verifying_apps).
 
-3. Настройте перечень продуктов в списке “ProductIds” в виджете “UI / BillingClientWidgetBlueprint”. Подробная информация о добавлении продуктов доступна на странице ["Как создать платный товар в приложении"](https://help.rustore.ru/rustore/for_developers/Monetization/How-create-paid-product-in-application).
+### История изменений
+
+[CHANGELOG](CHANGELOG.md)
+
+
+### Условия распространения
+
+Данное программное обеспечение, включая исходные коды, бинарные библиотеки и другие файлы распространяется под лицензией MIT. Информация о лицензировании доступна в документе [MIT-LICENSE](../MIT-LICENSE.txt).
 
 
 ### Техническая поддержка
 
-Дополнительная помощь и инструкции доступны на странице [help.rustore.ru](https://help.rustore.ru/).
+Дополнительная помощь и инструкции доступны на странице [help.rustore.ru](https://help.rustore.ru/) и по электронной почте [support@rustore.ru](mailto:support@rustore.ru).
