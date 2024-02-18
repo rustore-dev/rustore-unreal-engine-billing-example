@@ -20,6 +20,7 @@
 
 Вы можете ознакомиться с демонстрационным приложением содержащим представление работы всех методов sdk:
 - [README](unreal_example/README.md)
+- [unreal_example](https://gitflic.ru/project/rustore/rustore-unreal-engine-billing-example/file?file=unreal_example)
 
 
 ### История изменений
