@@ -133,7 +133,6 @@ FURuStorePurchase* DataConverter::ConvertPurchase(AndroidJavaObject* obj)
     purchase->purchaseId = obj->GetFString("purchaseId");
     purchase->productId = obj->GetFString("productId");
     purchase->invoiceId = obj->GetFString("invoiceId");
-    purchase->description = obj->GetFString("description");
     purchase->language = obj->GetFString("language");
 
     auto jpurchaseTime = obj->GetAJObject("purchaseTime", "Ljava/util/Date;");
@@ -185,6 +184,15 @@ FURuStorePurchase* DataConverter::ConvertPurchase(AndroidJavaObject* obj)
         purchase->purchaseState = static_cast<EURuStorePurchaseState>(ordinal);
 
         delete jpurchaseState;
+    }
+
+    auto jproductType = obj->GetAJObject("productType", "Lru/rustore/sdk/billingclient/model/product/ProductType;");
+    if (jproductType != nullptr)
+    {
+        int ordinal = jproductType->CallInt("ordinal");
+        purchase->productType = static_cast<EURuStoreProductType>(ordinal);
+
+        delete jproductType;
     }
 
     purchase->developerPayload = obj->GetFString("developerPayload");

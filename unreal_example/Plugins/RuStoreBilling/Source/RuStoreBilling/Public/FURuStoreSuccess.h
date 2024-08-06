@@ -18,6 +18,7 @@ struct RUSTOREBILLING_API FURuStoreSuccess : public FURuStorePaymentResult
         productId = "";
         invoiceId = "";
         subscriptionToken = "";
+        sandbox = false;
     }
 
     UPROPERTY(BlueprintReadOnly)
@@ -34,6 +35,9 @@ struct RUSTOREBILLING_API FURuStoreSuccess : public FURuStorePaymentResult
 
     UPROPERTY(BlueprintReadOnly)
     FString subscriptionToken;
+
+    UPROPERTY(BlueprintReadOnly)
+    bool sandbox;
 
     virtual FString GetTypeName() override { return "FURuStoreSuccess"; }
 };
