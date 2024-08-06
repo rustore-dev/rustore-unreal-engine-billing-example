@@ -30,6 +30,7 @@ FURuStorePaymentResult* PaymentResultListenerImpl::ConvertResponse(AndroidJavaOb
         result->productId = responseObject->GetFString("productId");
         result->invoiceId = responseObject->GetFString("invoiceId");
         result->subscriptionToken = responseObject->GetFString("subscriptionToken");
+        result->sandbox = responseObject->GetBool("sandbox");
 
         return result;
     }
@@ -37,6 +38,7 @@ FURuStorePaymentResult* PaymentResultListenerImpl::ConvertResponse(AndroidJavaOb
     {
         auto result = new FURuStoreCancelled();
         result->purchaseId = responseObject->GetFString("purchaseId");
+        result->sandbox = responseObject->GetBool("sandbox");
 
         return result;
     }
@@ -47,6 +49,7 @@ FURuStorePaymentResult* PaymentResultListenerImpl::ConvertResponse(AndroidJavaOb
         result->purchaseId = responseObject->GetFString("purchaseId");
         result->invoiceId = responseObject->GetFString("invoiceId");
         result->orderId = responseObject->GetFString("orderId");
+        result->sandbox = responseObject->GetBool("sandbox");
 
         auto jQuantity = responseObject->GetAJObject("quantity", "Ljava/lang/Integer;");
         if (jQuantity != nullptr)

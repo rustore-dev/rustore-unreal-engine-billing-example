@@ -20,6 +20,7 @@ public:
         quantity = 0;
         productId = "";
         errorCode = 0;
+        sandbox = false;
     }
 
     UPROPERTY(BlueprintReadOnly)
@@ -39,6 +40,9 @@ public:
 
     UPROPERTY(BlueprintReadOnly)
     int errorCode;
+
+    UPROPERTY(BlueprintReadOnly)
+    bool sandbox;
 
     virtual FString GetTypeName() override { return "FURuStoreFailure"; }
 };
