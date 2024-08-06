@@ -18,6 +18,8 @@ import ru.rustore.unitysdk.billingclient.callbacks.PurchasesResponseListener
 import ru.rustore.unitysdk.core.PlayerProvider
 import ru.rustore.unitysdk.core.callbacks.FeatureAvailabilityListener
 
+import com.google.gson.Gson
+
 object RuStoreUnityBillingClient {
 
 	private var allowErrorHandling: Boolean = false
