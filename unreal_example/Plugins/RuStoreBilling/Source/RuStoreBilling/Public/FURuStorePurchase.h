@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "EURuStoreProductType.h"
 #include "EURuStorePurchaseState.h"
 #include "FURuStorePurchase.generated.h"
 
@@ -16,7 +17,6 @@ struct FURuStorePurchase
         purchaseId = "";
         productId = "";
         invoiceId = "";
-        description = "";
         language = "";
         purchaseTime = FDateTime(0);
         orderId = "";
@@ -37,9 +37,6 @@ struct FURuStorePurchase
 
     UPROPERTY(BlueprintReadOnly)
     FString invoiceId;
-
-    UPROPERTY(BlueprintReadOnly)
-    FString description;
 
     UPROPERTY(BlueprintReadOnly)
     FString language;
@@ -67,6 +64,9 @@ struct FURuStorePurchase
 
     UPROPERTY(BlueprintReadOnly)
     EURuStorePurchaseState purchaseState;
+
+    UPROPERTY(BlueprintReadOnly)
+    EURuStoreProductType productType;
 
     UPROPERTY(BlueprintReadOnly)
     FString developerPayload;

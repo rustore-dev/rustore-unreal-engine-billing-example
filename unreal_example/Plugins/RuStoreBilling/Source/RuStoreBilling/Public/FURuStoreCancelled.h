@@ -14,10 +14,14 @@ struct RUSTOREBILLING_API FURuStoreCancelled : public FURuStorePaymentResult
     FURuStoreCancelled()
     {
         purchaseId = "";
+        sandbox = false;
     }
 
     UPROPERTY(BlueprintReadOnly)
     FString purchaseId;
+
+    UPROPERTY(BlueprintReadOnly)
+    bool sandbox;
 
     virtual FString GetTypeName() override { return "FURuStoreCancelled"; }
 };
