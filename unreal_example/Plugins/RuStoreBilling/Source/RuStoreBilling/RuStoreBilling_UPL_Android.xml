@@ -33,7 +33,7 @@
       
       dependencies {
         // RuStore Billing
-        implementation ("ru.rustore.sdk:billingclient:6.+$billing_type")
+        implementation ("ru.rustore.sdk:billingclient:6.1.0$billing_type")
         implementation fileTree(include: ["RuStoreUnityBillingClient${billing_type}.aar"], dir: 'src/main/libs')
         
         implementation ("androidx.lifecycle:lifecycle-viewmodel:2.5.1")
