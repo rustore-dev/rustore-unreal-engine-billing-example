@@ -16,10 +16,10 @@ struct FURuStoreProduct
     FURuStoreProduct()
     {
         productId = "";
-        productType = EURuStoreProductType::NON_CONSUMABLE;
+        productType = EURuStoreProductType::UNKNOWN;
         productStatus = EURuStoreProductStatus::INACTIVE;
         priceLabel = "";
-        price = 0;
+        price = -1;
         currency = "";
         language = "";
         title = "";
