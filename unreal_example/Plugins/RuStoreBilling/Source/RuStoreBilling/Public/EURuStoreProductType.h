@@ -10,5 +10,6 @@ enum class EURuStoreProductType : uint8
 {
     NON_CONSUMABLE UMETA(DisplayName = "NON_CONSUMABLE"),
     CONSUMABLE UMETA(DisplayName = "CONSUMABLE"),
-    SUBSCRIPTION UMETA(DisplayName = "SUBSCRIPTION")
+    SUBSCRIPTION UMETA(DisplayName = "SUBSCRIPTION"),
+    UNKNOWN UMETA(DisplayName = "UNKNOWN")
 };
