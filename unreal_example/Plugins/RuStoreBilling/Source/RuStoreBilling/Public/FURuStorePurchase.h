@@ -21,10 +21,11 @@ struct FURuStorePurchase
         purchaseTime = FDateTime(0);
         orderId = "";
         amountLabel = "";
-        amount = 0;
+        amount = -1;
         currency = "";
-        quantity = 0;
-        purchaseState = EURuStorePurchaseState::CANCELLED;
+        quantity = -1;
+        purchaseState = EURuStorePurchaseState::UNKNOWN;
+        productType = EURuStoreProductType::UNKNOWN;
         developerPayload = "";
         subscriptionToken = "";
     }
