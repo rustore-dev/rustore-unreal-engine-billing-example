@@ -17,9 +17,9 @@ public:
         purchaseId = "";
         invoiceId = "";
         orderId = "";
-        quantity = 0;
+        quantity = -1;
         productId = "";
-        errorCode = 0;
+        errorCode = -1;
         sandbox = false;
     }
 
