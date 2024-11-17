@@ -90,6 +90,9 @@ public:
     UFUNCTION(BlueprintCallable, Category = "RuStore Billing Client")
     EURuStoreTheme GetTheme();
 
+    UFUNCTION(BlueprintCallable, Category = "RuStore Billing Client")
+    bool IsRuStoreInstalled();
+
     // 
     UFUNCTION(BlueprintCallable, Category = "RuStore Billing Client")
     void CheckPurchasesAvailability(int64& requestId);

@@ -9,6 +9,7 @@ import ru.rustore.sdk.billingclient.provider.logger.ExternalPaymentLogger
 import ru.rustore.sdk.billingclient.utils.pub.checkPurchasesAvailability
 import ru.rustore.sdk.billingclient.utils.resolveForBilling
 import ru.rustore.sdk.core.exception.RuStoreException
+import ru.rustore.sdk.core.util.RuStoreUtils
 import ru.rustore.unitysdk.billingclient.callbacks.ConfirmPurchaseListener
 import ru.rustore.unitysdk.billingclient.callbacks.DeletePurchaseListener
 import ru.rustore.unitysdk.billingclient.callbacks.PaymentResultListener
@@ -17,8 +18,6 @@ import ru.rustore.unitysdk.billingclient.callbacks.PurchaseInfoResponseListener
 import ru.rustore.unitysdk.billingclient.callbacks.PurchasesResponseListener
 import ru.rustore.unitysdk.core.PlayerProvider
 import ru.rustore.unitysdk.core.callbacks.FeatureAvailabilityListener
-
-import com.google.gson.Gson
 
 object RuStoreUnityBillingClient {
 
@@ -33,6 +32,11 @@ object RuStoreUnityBillingClient {
 	fun getErrorHandling() : Boolean {
 		return allowErrorHandling
 	}
+
+	fun isRuStoreInstalled(): Boolean =
+		PlayerProvider.getCurrentActivity()?.application?.let {
+			return RuStoreUtils.isRuStoreInstalled(it)
+		} ?: false
 
 	fun init(consoleApplicationId: String, deeplinkScheme: String, allowErrorHandling: Boolean, enableLogs: Boolean, metricType: String) {
 		if (isInitialized) return
@@ -55,16 +59,14 @@ object RuStoreUnityBillingClient {
 	}
 
 	fun checkPurchasesAvailability(listener: FeatureAvailabilityListener) {
-		PlayerProvider.getCurrentActivity()?.run {
-			RuStoreBillingClient.checkPurchasesAvailability(application)
-				.addOnSuccessListener { result ->
-					listener.OnSuccess(result)
-				}
-				.addOnFailureListener { throwable ->
-					handleError(throwable)
-					listener.OnFailure(throwable)
-				}
-		}
+		RuStoreBillingClient.checkPurchasesAvailability()
+			.addOnSuccessListener { result ->
+				listener.OnSuccess(result)
+			}
+			.addOnFailureListener { throwable ->
+				handleError(throwable)
+				listener.OnFailure(throwable)
+			}
 	}
 
 	fun getProducts(productIds: Array<String>, listener: ProductsResponseListener) {
