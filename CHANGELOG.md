@@ -1,5 +1,9 @@
 ## История изменений
 
+### Release 7.0.0
+- Версия SDK billing 7.0.0.
+- В класс `URuStoreBillingClient` добавлен метод `isRuStoreInstalled`.
+
 ### Release 6.1.0
 - Версия SDK billing 6.1.0.
 
