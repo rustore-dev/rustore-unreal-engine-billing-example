@@ -16,7 +16,7 @@
 
 using namespace RuStoreSDK;
 
-const FString URuStoreBillingClient::PluginVersion = "3.0";
+const FString URuStoreBillingClient::PluginVersion = "7.0.0";
 URuStoreBillingClient* URuStoreBillingClient::_instance = nullptr;
 bool URuStoreBillingClient::_bIsInstanceInitialized = false;
 
@@ -98,6 +98,13 @@ bool URuStoreBillingClient::Init(FURuStoreBillingClientConfig config)
     SetAllowNativeErrorHandling(config.allowNativeErrorHandling);
 
     return bIsInitialized = true;
+}
+
+bool URuStoreBillingClient::IsRuStoreInstalled() {
+    if (!URuStoreCore::IsPlatformSupported()) return false;
+    if (!bIsInitialized) return false;
+
+    return _clientWrapper->CallBool(TEXT("isRuStoreInstalled"));
 }
 
 void URuStoreBillingClient::Dispose()
