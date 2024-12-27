@@ -7,11 +7,17 @@
 #include "FURuStoreProduct.h"
 #include "FURuStoreProductsResponse.generated.h"
 
+/*!
+@brief Информция о продуктах.
+*/
 USTRUCT(BlueprintType)
 struct FURuStoreProductsResponse
 {
 	GENERATED_USTRUCT_BODY()
 
+	/*!
+	@brief Список продуктов.
+	*/
 	UPROPERTY(BlueprintReadWrite)
 	TArray<FURuStoreProduct> products;
 };
