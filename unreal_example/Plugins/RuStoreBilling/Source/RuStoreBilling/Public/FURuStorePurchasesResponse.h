@@ -7,7 +7,7 @@
 #include "FURuStorePurchasesResponse.generated.h"
 
 /*!
-@brief Информция о покупках пользователя.
+@brief Информация о покупках пользователя.
 */
 USTRUCT(BlueprintType)
 struct FURuStorePurchasesResponse

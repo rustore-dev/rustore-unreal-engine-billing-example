@@ -8,7 +8,7 @@
 #include "FURuStoreProductsResponse.generated.h"
 
 /*!
-@brief Информция о продуктах.
+@brief Информация о продуктах.
 */
 USTRUCT(BlueprintType)
 struct FURuStoreProductsResponse
