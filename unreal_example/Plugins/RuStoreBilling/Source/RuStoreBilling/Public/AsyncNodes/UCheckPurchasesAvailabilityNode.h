@@ -6,7 +6,7 @@
 #include "URuStoreBillingClient.h"
 #include "UCheckPurchasesAvailabilityNode.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FCheckPurchasesAvailabilityPin, FURuStoreFeatureAvailabilityResult, response, FURuStoreError, error);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FCheckPurchasesAvailabilityPin, FURuStorePurchaseAvailabilityResult, response, FURuStoreError, error);
 
 UCLASS()
 class RUSTOREBILLING_API UCheckPurchasesAvailabilityNode : public UBlueprintAsyncActionBase

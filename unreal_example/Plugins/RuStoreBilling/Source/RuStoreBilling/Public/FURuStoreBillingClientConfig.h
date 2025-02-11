@@ -41,6 +41,7 @@ struct RUSTOREBILLING_API FURuStoreBillingClientConfig
 	/*!
 	@brief Разрешить обработку ошибок в нативном SDK.
 	*/
+	[[deprecated("This field is deprecated. Error handling must be performed on the application side.")]]
 	UPROPERTY(BlueprintReadWrite)
 	bool allowNativeErrorHandling;
 	

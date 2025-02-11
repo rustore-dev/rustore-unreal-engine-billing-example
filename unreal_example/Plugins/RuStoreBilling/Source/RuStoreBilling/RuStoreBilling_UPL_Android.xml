@@ -33,11 +33,12 @@
       
       dependencies {
         // RuStore Billing
-        implementation ("ru.rustore.sdk:billingclient:7.0.0$billing_type")
+        implementation ("ru.rustore.sdk:billingclient:8.0.0$billing_type")
         implementation fileTree(include: ["RuStoreUnityBillingClient${billing_type}.aar"], dir: 'src/main/libs')
         
         implementation ("androidx.lifecycle:lifecycle-viewmodel:2.5.1")
         implementation ("androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1")
+        implementation ("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.22")
       }
     </insert>
   </buildGradleAdditions>
