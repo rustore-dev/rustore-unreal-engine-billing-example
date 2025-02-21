@@ -15,6 +15,7 @@
 #include "FURuStoreError.h"
 #include "RuStoreListener.h"
 #include "FURuStorePaymentResult.h"
+#include "FURuStoreUserAuthorizationStatus.h"
 #include "URuStorePaymentResultClass.h"
 #include "URuStoreBillingClient.generated.h"
 
@@ -126,6 +127,18 @@ public:
     [[deprecated("This method is deprecated. This method only works for flows with an authorized user in RuStore.")]]
     long CheckPurchasesAvailability(TFunction<void(long, TSharedPtr<FURuStorePurchaseAvailabilityResult, ESPMode::ThreadSafe>)> onSuccess, TFunction<void(long, TSharedPtr<FURuStoreError, ESPMode::ThreadSafe>)> onFailure);
     
+    /*!
+    @brief Проверка статуса авторизации у пользователя.
+    @param onSuccess
+        Действие, выполняемое при успешном завершении операции.
+        Возвращает requestId типа long и объект FURuStoreUserAuthorizationStatus с информцаией о доступности оплаты.
+    @param onFailure
+        Действие, выполняемое в случае ошибки.
+        Возвращает requestId типа long и объект типа FURuStoreError с информацией об ошибке.
+    @return Возвращает уникальный в рамках одного запуска приложения requestId.
+    */
+    long GetAuthorizationStatus(TFunction<void(long, TSharedPtr<FURuStoreUserAuthorizationStatus, ESPMode::ThreadSafe>)> onSuccess, TFunction<void(long, TSharedPtr<FURuStoreError, ESPMode::ThreadSafe>)> onFailure);
+
     /*!
     @brief Получение списка продуктов, добавленных в ваше приложение через RuStore консоль.
     @param productIds

@@ -200,3 +200,13 @@ FURuStorePurchase* DataConverter::ConvertPurchase(AndroidJavaObject* obj)
 
     return purchase;
 }
+
+FURuStoreUserAuthorizationStatus* DataConverter::ConvertFURuStoreUserAuthorizationStatus(AndroidJavaObject* obj)
+{
+    if (obj == nullptr) return nullptr;
+
+    auto result = new FURuStoreUserAuthorizationStatus();
+    result->authorized = obj->GetBool("authorized");
+
+    return result;
+}

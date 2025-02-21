@@ -9,6 +9,7 @@
 #include "ConfirmPurchaseResponseListenerImpl.h"
 #include "DeletePurchaseResponseListenerImpl.h"
 #include "PurchaseInfoResponseListenerImpl.h"
+#include "UserAuthorizationStatusListenerImpl.h"
 #include "URuStoreCancelled.h"
 #include "URuStoreFailure.h"
 #include "URuStoreInvalidPaymentState.h"
@@ -133,6 +134,17 @@ long URuStoreBillingClient::CheckPurchasesAvailability(TFunction<void(long, TSha
 
     auto listener = ListenerBind(new PurchaseAvailabilityListenerImpl(onSuccess, onFailure, [this](RuStoreListener* item) { ListenerUnbind(item); }));
     _clientWrapper->CallVoid(TEXT("checkPurchasesAvailability"), listener->GetJWrapper());
+
+    return listener->GetId();
+}
+
+long URuStoreBillingClient::GetAuthorizationStatus(TFunction<void(long, TSharedPtr<FURuStoreUserAuthorizationStatus, ESPMode::ThreadSafe>)> onSuccess, TFunction<void(long, TSharedPtr<FURuStoreError, ESPMode::ThreadSafe>)> onFailure)
+{
+    if (!URuStoreCore::IsPlatformSupported(onFailure)) return 0;
+    if (!bIsInitialized) return 0;
+
+    auto listener = ListenerBind(new UserAuthorizationStatusListenerImpl(onSuccess, onFailure, [this](RuStoreListener* item) { ListenerUnbind(item); }));
+    _clientWrapper->CallVoid(TEXT("getAuthorizationStatus"), listener->GetJWrapper());
 
     return listener->GetId();
 }

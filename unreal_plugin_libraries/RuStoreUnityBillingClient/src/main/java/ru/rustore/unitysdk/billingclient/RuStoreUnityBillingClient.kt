@@ -17,6 +17,7 @@ import ru.rustore.unitysdk.billingclient.callbacks.ProductsResponseListener
 import ru.rustore.unitysdk.billingclient.callbacks.PurchaseAvailabilityListener
 import ru.rustore.unitysdk.billingclient.callbacks.PurchaseInfoResponseListener
 import ru.rustore.unitysdk.billingclient.callbacks.PurchasesResponseListener
+import ru.rustore.unitysdk.billingclient.callbacks.UserAuthorizationStatusListener
 import ru.rustore.unitysdk.core.PlayerProvider
 
 object RuStoreUnityBillingClient {
@@ -39,6 +40,17 @@ object RuStoreUnityBillingClient {
 		PlayerProvider.getCurrentActivity()?.application?.let {
 			return RuStoreUtils.isRuStoreInstalled(it)
 		} ?: false
+
+	fun getAuthorizationStatus(listener: UserAuthorizationStatusListener) {
+		billingClient.userInfo.getAuthorizationStatus()
+			.addOnSuccessListener { result ->
+				listener.OnSuccess(result)
+			}
+			.addOnFailureListener { throwable ->
+				handleError(throwable)
+				listener.OnFailure(throwable)
+			}
+	}
 
 	fun init(consoleApplicationId: String, deeplinkScheme: String, allowErrorHandling: Boolean, enableLogs: Boolean, metricType: String) {
 		if (isInitialized) return
