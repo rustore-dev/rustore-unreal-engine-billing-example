@@ -7,21 +7,22 @@
 
 #include "AndroidJavaObject.h"
 #include "EURuStoreTheme.h"
-#include "FURuStoreFeatureAvailabilityResult.h"
 #include "FURuStoreProductsResponse.h"
 #include "FURuStorePurchase.h"
+#include "FURuStorePurchaseAvailabilityResult.h"
 #include "FURuStorePurchasesResponse.h"
 #include "FURuStoreBillingClientConfig.h"
 #include "FURuStoreError.h"
 #include "RuStoreListener.h"
 #include "FURuStorePaymentResult.h"
+#include "FURuStoreUserAuthorizationStatus.h"
 #include "URuStorePaymentResultClass.h"
 #include "URuStoreBillingClient.generated.h"
 
 using namespace RuStoreSDK;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FRuStoreCheckPurchasesAvailabilityErrorDelegate, int64, requestId, FURuStoreError, error);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FRuStoreCheckPurchasesAvailabilityResponseDelegate, int64, requestId, FURuStoreFeatureAvailabilityResult, response);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FRuStoreCheckPurchasesAvailabilityResponseDelegate, int64, requestId, FURuStorePurchaseAvailabilityResult, response);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FRuStoreGetProductsErrorDelegate, int64, requestId, FURuStoreError, error);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FRuStoreGetProductsResponseDelegate, int64, requestId, FURuStoreProductsResponse, response);
@@ -84,6 +85,7 @@ public:
     @brief Обработка ошибок в нативном SDK.
     @param value true — разрешает обработку ошибок, false — запрещает.
     */
+    [[deprecated("This method is deprecated. This method only works for flows with an authorized user in RuStore.")]]
     UFUNCTION(BlueprintCallable, Category = "RuStore Billing Client")
     void SetAllowNativeErrorHandling(bool value);
 
@@ -112,18 +114,31 @@ public:
     /*!
     @brief
         Проверка доступности платежей.
-        Если все условия выполняются, возвращается FURuStoreFeatureAvailabilityResult::isAvailable == true.
-        В противном случае возвращается FURuStoreFeatureAvailabilityResult::isAvailable == false.
+        Если все условия выполняются, возвращается FURuStorePurchaseAvailabilityResult::isAvailable == true.
+        В противном случае возвращается FURuStorePurchaseAvailabilityResult::isAvailable == false.
     @param onSuccess
         Действие, выполняемое при успешном завершении операции.
-        Возвращает requestId типа long и объект FURuStoreFeatureAvailabilityResult с информцаией о доступности оплаты.
+        Возвращает requestId типа long и объект FURuStorePurchaseAvailabilityResult с информцаией о доступности оплаты.
     @param onFailure
         Действие, выполняемое в случае ошибки.
         Возвращает requestId типа long и объект типа FURuStoreError с информацией об ошибке.
     @return Возвращает уникальный в рамках одного запуска приложения requestId.
     */
-    long CheckPurchasesAvailability(TFunction<void(long, TSharedPtr<FURuStoreFeatureAvailabilityResult, ESPMode::ThreadSafe>)> onSuccess, TFunction<void(long, TSharedPtr<FURuStoreError, ESPMode::ThreadSafe>)> onFailure);
+    [[deprecated("This method is deprecated. This method only works for flows with an authorized user in RuStore.")]]
+    long CheckPurchasesAvailability(TFunction<void(long, TSharedPtr<FURuStorePurchaseAvailabilityResult, ESPMode::ThreadSafe>)> onSuccess, TFunction<void(long, TSharedPtr<FURuStoreError, ESPMode::ThreadSafe>)> onFailure);
     
+    /*!
+    @brief Проверка статуса авторизации у пользователя.
+    @param onSuccess
+        Действие, выполняемое при успешном завершении операции.
+        Возвращает requestId типа long и объект FURuStoreUserAuthorizationStatus с информцаией о доступности оплаты.
+    @param onFailure
+        Действие, выполняемое в случае ошибки.
+        Возвращает requestId типа long и объект типа FURuStoreError с информацией об ошибке.
+    @return Возвращает уникальный в рамках одного запуска приложения requestId.
+    */
+    long GetAuthorizationStatus(TFunction<void(long, TSharedPtr<FURuStoreUserAuthorizationStatus, ESPMode::ThreadSafe>)> onSuccess, TFunction<void(long, TSharedPtr<FURuStoreError, ESPMode::ThreadSafe>)> onFailure);
+
     /*!
     @brief Получение списка продуктов, добавленных в ваше приложение через RuStore консоль.
     @param productIds
@@ -239,6 +254,7 @@ public:
     bool IsRuStoreInstalled();
 
     // 
+    [[deprecated("This method is deprecated. This method only works for flows with an authorized user in RuStore.")]]
     UFUNCTION(BlueprintCallable, Category = "RuStore Billing Client")
     void CheckPurchasesAvailability(int64& requestId);
 

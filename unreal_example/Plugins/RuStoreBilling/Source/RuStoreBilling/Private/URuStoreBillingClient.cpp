@@ -2,13 +2,14 @@
 
 #include "URuStoreBillingClient.h"
 #include "URuStoreCore.h"
-#include "FeatureAvailabilityListenerImpl.h"
 #include "ProductsResponseListenerImpl.h"
+#include "PurchaseAvailabilityListenerImpl.h"
 #include "PurchasesResponseListenerImpl.h"
 #include "PaymentResultListenerImpl.h"
 #include "ConfirmPurchaseResponseListenerImpl.h"
 #include "DeletePurchaseResponseListenerImpl.h"
 #include "PurchaseInfoResponseListenerImpl.h"
+#include "UserAuthorizationStatusListenerImpl.h"
 #include "URuStoreCancelled.h"
 #include "URuStoreFailure.h"
 #include "URuStoreInvalidPaymentState.h"
@@ -16,7 +17,7 @@
 
 using namespace RuStoreSDK;
 
-const FString URuStoreBillingClient::PluginVersion = "7.0.0";
+const FString URuStoreBillingClient::PluginVersion = "8.0.0";
 URuStoreBillingClient* URuStoreBillingClient::_instance = nullptr;
 bool URuStoreBillingClient::_bIsInstanceInitialized = false;
 
@@ -126,13 +127,24 @@ void URuStoreBillingClient::ConditionalBeginDestroy()
     if (_bIsInstanceInitialized) _bIsInstanceInitialized = false;
 }
 
-long URuStoreBillingClient::CheckPurchasesAvailability(TFunction<void(long, TSharedPtr<FURuStoreFeatureAvailabilityResult, ESPMode::ThreadSafe>)> onSuccess, TFunction<void(long, TSharedPtr<FURuStoreError, ESPMode::ThreadSafe>)> onFailure)
+long URuStoreBillingClient::CheckPurchasesAvailability(TFunction<void(long, TSharedPtr<FURuStorePurchaseAvailabilityResult, ESPMode::ThreadSafe>)> onSuccess, TFunction<void(long, TSharedPtr<FURuStoreError, ESPMode::ThreadSafe>)> onFailure)
 {
     if (!URuStoreCore::IsPlatformSupported(onFailure)) return 0;
     if (!bIsInitialized) return 0;
 
-    auto listener = ListenerBind(new FeatureAvailabilityListenerImpl(onSuccess, onFailure, [this](RuStoreListener* item) { ListenerUnbind(item); }));
+    auto listener = ListenerBind(new PurchaseAvailabilityListenerImpl(onSuccess, onFailure, [this](RuStoreListener* item) { ListenerUnbind(item); }));
     _clientWrapper->CallVoid(TEXT("checkPurchasesAvailability"), listener->GetJWrapper());
+
+    return listener->GetId();
+}
+
+long URuStoreBillingClient::GetAuthorizationStatus(TFunction<void(long, TSharedPtr<FURuStoreUserAuthorizationStatus, ESPMode::ThreadSafe>)> onSuccess, TFunction<void(long, TSharedPtr<FURuStoreError, ESPMode::ThreadSafe>)> onFailure)
+{
+    if (!URuStoreCore::IsPlatformSupported(onFailure)) return 0;
+    if (!bIsInitialized) return 0;
+
+    auto listener = ListenerBind(new UserAuthorizationStatusListenerImpl(onSuccess, onFailure, [this](RuStoreListener* item) { ListenerUnbind(item); }));
+    _clientWrapper->CallVoid(TEXT("getAuthorizationStatus"), listener->GetJWrapper());
 
     return listener->GetId();
 }
@@ -223,7 +235,7 @@ EURuStoreTheme URuStoreBillingClient::GetTheme()
 void URuStoreBillingClient::CheckPurchasesAvailability(int64& requestId)
 {
     requestId = CheckPurchasesAvailability(
-        [this](long requestId, TSharedPtr<FURuStoreFeatureAvailabilityResult, ESPMode::ThreadSafe> response) {
+        [this](long requestId, TSharedPtr<FURuStorePurchaseAvailabilityResult, ESPMode::ThreadSafe> response) {
             OnCheckPurchasesAvailabilityResponse.Broadcast(requestId, *response);
         },
         [this](long requestId, TSharedPtr<FURuStoreError, ESPMode::ThreadSafe> error) {

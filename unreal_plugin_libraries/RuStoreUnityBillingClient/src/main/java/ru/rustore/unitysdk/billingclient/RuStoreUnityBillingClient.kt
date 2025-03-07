@@ -14,10 +14,11 @@ import ru.rustore.unitysdk.billingclient.callbacks.ConfirmPurchaseListener
 import ru.rustore.unitysdk.billingclient.callbacks.DeletePurchaseListener
 import ru.rustore.unitysdk.billingclient.callbacks.PaymentResultListener
 import ru.rustore.unitysdk.billingclient.callbacks.ProductsResponseListener
+import ru.rustore.unitysdk.billingclient.callbacks.PurchaseAvailabilityListener
 import ru.rustore.unitysdk.billingclient.callbacks.PurchaseInfoResponseListener
 import ru.rustore.unitysdk.billingclient.callbacks.PurchasesResponseListener
+import ru.rustore.unitysdk.billingclient.callbacks.UserAuthorizationStatusListener
 import ru.rustore.unitysdk.core.PlayerProvider
-import ru.rustore.unitysdk.core.callbacks.FeatureAvailabilityListener
 
 object RuStoreUnityBillingClient {
 
@@ -25,10 +26,12 @@ object RuStoreUnityBillingClient {
 	private lateinit var billingClient: RuStoreBillingClient
 	private var isInitialized: Boolean = false
 
+	@Deprecated("This field is deprecated. Error handling must be performed on the application side.")
 	fun setErrorHandling(allowErrorHandling: Boolean) {
 		this.allowErrorHandling = allowErrorHandling
 	}
 
+	@Deprecated("This field is deprecated. Error handling must be performed on the application side.")
 	fun getErrorHandling() : Boolean {
 		return allowErrorHandling
 	}
@@ -37,6 +40,17 @@ object RuStoreUnityBillingClient {
 		PlayerProvider.getCurrentActivity()?.application?.let {
 			return RuStoreUtils.isRuStoreInstalled(it)
 		} ?: false
+
+	fun getAuthorizationStatus(listener: UserAuthorizationStatusListener) {
+		billingClient.userInfo.getAuthorizationStatus()
+			.addOnSuccessListener { result ->
+				listener.OnSuccess(result)
+			}
+			.addOnFailureListener { throwable ->
+				handleError(throwable)
+				listener.OnFailure(throwable)
+			}
+	}
 
 	fun init(consoleApplicationId: String, deeplinkScheme: String, allowErrorHandling: Boolean, enableLogs: Boolean, metricType: String) {
 		if (isInitialized) return
@@ -58,7 +72,8 @@ object RuStoreUnityBillingClient {
 		isInitialized = true;
 	}
 
-	fun checkPurchasesAvailability(listener: FeatureAvailabilityListener) {
+	@Deprecated("This method is deprecated. This method only works for flows with an authorized user in RuStore.")
+	fun checkPurchasesAvailability(listener: PurchaseAvailabilityListener) {
 		RuStoreBillingClient.checkPurchasesAvailability()
 			.addOnSuccessListener { result ->
 				listener.OnSuccess(result)

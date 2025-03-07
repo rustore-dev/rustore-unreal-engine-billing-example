@@ -13,11 +13,11 @@ UCheckPurchasesAvailabilityNode* UCheckPurchasesAvailabilityNode::CheckPurchases
     auto node = NewObject<UCheckPurchasesAvailabilityNode>(GetTransientPackage());
     
     target->CheckPurchasesAvailability(
-        [node](long requestId, TSharedPtr<FURuStoreFeatureAvailabilityResult, ESPMode::ThreadSafe> response) {
+        [node](long requestId, TSharedPtr<FURuStorePurchaseAvailabilityResult, ESPMode::ThreadSafe> response) {
             node->Success.Broadcast(*response, FURuStoreError());
         },
         [node](long requestId, TSharedPtr<FURuStoreError, ESPMode::ThreadSafe> error) {
-            node->Failure.Broadcast(FURuStoreFeatureAvailabilityResult(), *error);
+            node->Failure.Broadcast(FURuStorePurchaseAvailabilityResult(), *error);
         }
     );
 

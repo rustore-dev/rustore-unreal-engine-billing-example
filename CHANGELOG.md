@@ -1,5 +1,13 @@
 ## История изменений
 
+### Release 8.0.0
+- Версия SDK billing 8.0.0.
+- Метод `CheckPurchasesAvailability` в классе `URuStoreBillingClient` помечен как устаревший.
+- Метод `CheckPurchasesAvailability` в событии `onSuccess` возвращает объект `FURuStorePurchaseAvailabilityResult`.
+- Метод `SetAllowNativeErrorHandling` в классе `URuStoreBillingClient` помечен как устаревший.
+- Поле `allowNativeErrorHandling` в структуре `FURuStoreBillingClientConfig` помечено как устаревшее.
+- Добавлен метод `GetAuthorizationStatus`.
+
 ### Release 7.0.0
 - Версия SDK billing 7.0.0.
 - В класс `URuStoreBillingClient` добавлен метод `isRuStoreInstalled`.
