@@ -19,9 +19,11 @@ import ru.rustore.unitysdk.billingclient.callbacks.PurchaseInfoResponseListener
 import ru.rustore.unitysdk.billingclient.callbacks.PurchasesResponseListener
 import ru.rustore.unitysdk.billingclient.callbacks.UserAuthorizationStatusListener
 import ru.rustore.unitysdk.core.PlayerProvider
+import java.util.concurrent.atomic.AtomicReference
 
 object RuStoreUnityBillingClient {
 
+	private val pendingIntentRef = AtomicReference<Intent?>(null)
 	private var allowErrorHandling: Boolean = false
 	private lateinit var billingClient: RuStoreBillingClient
 	private var isInitialized: Boolean = false
@@ -69,7 +71,11 @@ object RuStoreUnityBillingClient {
 			)
 		}
 
-		isInitialized = true;
+		isInitialized = true
+
+		pendingIntentRef.getAndSet(null)?.let { intent ->
+			onNewIntent(intent)
+		}
 	}
 
 	@Deprecated("This method is deprecated. This method only works for flows with an authorized user in RuStore.")
@@ -170,7 +176,10 @@ object RuStoreUnityBillingClient {
 
 	@JvmStatic
 	fun onNewIntent(intent: Intent) {
-		if (!isInitialized) return
+		if (!isInitialized) {
+			pendingIntentRef.set(intent)
+			return
+		}
 		billingClient.onNewIntent(intent)
 	}
 
