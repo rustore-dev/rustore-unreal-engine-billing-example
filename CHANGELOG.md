@@ -1,5 +1,8 @@
 ## История изменений
 
+### Release 9.0.1
+- Версия SDK billing 9.0.1.
+
 ### Release 8.0.0
 - Версия SDK billing 8.0.0.
 - Метод `CheckPurchasesAvailability` в классе `URuStoreBillingClient` помечен как устаревший.
