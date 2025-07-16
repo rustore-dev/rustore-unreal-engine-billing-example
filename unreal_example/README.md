@@ -85,7 +85,7 @@
 
 Дополнительная помощь и инструкции доступны на странице [rustore.ru/help/](https://www.rustore.ru/help/) и по электронной почте [support@rustore.ru](mailto:support@rustore.ru).
 
-[10]: https://www.rustore.ru/help/sdk/payments/unreal/9-0-1
-[20]: https://www.rustore.ru/help/sdk/payments/unreal/9-0-1#getauthorizationstatus
-[30]: https://www.rustore.ru/help/sdk/payments/unreal/9-0-1#getproducts
-[40]: https://www.rustore.ru/help/sdk/payments/unreal/9-0-1#purchaseproduct
+[10]: https://www.rustore.ru/help/sdk/payments/unreal/9-1-0
+[20]: https://www.rustore.ru/help/sdk/payments/unreal/9-1-0#getauthorizationstatus
+[30]: https://www.rustore.ru/help/sdk/payments/unreal/9-1-0#getproducts
+[40]: https://www.rustore.ru/help/sdk/payments/unreal/9-1-0#purchaseproduct
