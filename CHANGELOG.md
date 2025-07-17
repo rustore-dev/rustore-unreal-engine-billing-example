@@ -1,5 +1,8 @@
 ## История изменений
 
+### Release 9.1.0
+- Версия SDK billing 9.1.0.
+
 ### Release 9.0.1
 - Версия SDK billing 9.0.1.
 
